@@ -807,15 +807,15 @@ for tt in range(0,len(teamList)):
         #Calculate the opponents score for different super shot proportions
         #using the team B number of shots
         
-        #Set variable for total score and shots
-        oppScore = list()
-        oppShots = list()
-        oppSuperShots = list()
-        oppStandardShots = list()
-        oppSuperProp = list()    
-        
         #Loop through the proportions
         for pp in range(0,len(compProps)):
+            
+            #Set variable for total score and shots
+            oppScore = list()
+            oppShots = list()
+            oppSuperShots = list()
+            oppStandardShots = list()
+            oppSuperProp = list() 
             
             #Loop through the number of simulations
             for nn in range(0,nSims):
@@ -859,31 +859,40 @@ for tt in range(0,len(teamList)):
                             
                 #Append data to team list
                 oppScore.append(currOppScore)
-                oppShots.append(teamShotsA[nn])
+                oppShots.append(teamShotsB[nn])
                 oppSuperShots.append(superShots)
                 oppStandardShots.append(standardShots)
                 oppSuperProp.append(compProps[pp])
                 
-        #Calculate margin between current opponent and team scores
-        for kk in range(0,len(teamScore)):
-            
-            #Append data
-            #Main team
-            compSimResults['teamName'].append(teamList[tt])
-            compSimResults['teamSuperProp'].append(teamSuperProp[kk])
-            compSimResults['teamShots'].append(teamShots[kk])
-            compSimResults['teamSuperShots'].append(teamSuperShots[kk])
-            compSimResults['teamStandardShots'].append(teamStandardShots[kk])
-            #Opponent team
-            compSimResults['opponentName'].append(teamList[cc])
-            compSimResults['opponentSuperProp'].append(oppSuperProp[kk])
-            compSimResults['opponentShots'].append(oppShots[kk])
-            compSimResults['opponentSuperShots'].append(oppSuperShots[kk])
-            compSimResults['opponentStandardShots'].append(oppStandardShots[kk])
-            #Scoring
-            compSimResults['teamScore'].append(teamScore[kk])
-            compSimResults['opponentScore'].append(oppScore[kk])
-            compSimResults['margin'].append(teamScore[kk] - oppScore[kk])
+            #Within each proportion we duplicate the opposition results
+            #so that they can be compared to each of the other teams
+            #simulated proportions
+            oppScore = oppScore * len(compProps)
+            oppShots = oppShots * len(compProps)
+            oppSuperShots = oppSuperShots * len(compProps)
+            oppStandardShots = oppStandardShots * len(compProps)
+            oppSuperProp = oppSuperProp * len(compProps)
+                
+            #Calculate margin between current opponent proportion and all team scores
+            #Append to the data dictionary
+            for kk in range(0,len(teamScore)):
+
+                #Main team
+                compSimResults['teamName'].append(teamList[tt])
+                compSimResults['teamSuperProp'].append(teamSuperProp[kk])
+                compSimResults['teamShots'].append(teamShots[kk])
+                compSimResults['teamSuperShots'].append(teamSuperShots[kk])
+                compSimResults['teamStandardShots'].append(teamStandardShots[kk])
+                #Opponent team
+                compSimResults['opponentName'].append(teamList[cc])
+                compSimResults['opponentSuperProp'].append(oppSuperProp[kk])
+                compSimResults['opponentShots'].append(oppShots[kk])
+                compSimResults['opponentSuperShots'].append(oppSuperShots[kk])
+                compSimResults['opponentStandardShots'].append(oppStandardShots[kk])
+                #Scoring
+                compSimResults['teamScore'].append(teamScore[kk])
+                compSimResults['opponentScore'].append(oppScore[kk])
+                compSimResults['margin'].append(teamScore[kk] - oppScore[kk])
 
 #Convert 'competitive' sim results to dataframe
 df_compSimResults = pd.DataFrame.from_dict(compSimResults)
@@ -905,17 +914,19 @@ for tt in range(0,len(teamList)):
         teamCol2 = colourDict[teamList[cc]]
         
         #Set the subplot figure to plot on
-        fig, ax = plt.subplots(figsize=(9, 9), nrows = 4, ncols = 4)
+        fig, ax = plt.subplots(figsize=(10, 10), nrows = 5, ncols = 5)
         
         #Loop through the simulated proportions for each team
         for p1 in range(0,len(compProps)):
             for p2 in range(0,len(compProps)):
-        
+                
+                ####### SOMETHING ODD GOING ON WITH BINS/LABELS?????
+                
                 #Extract current match up
                 df_currComp = df_compSimResults.loc[(df_compSimResults['teamName'] == teamList[tt]) &
                                                     (df_compSimResults['opponentName'] == teamList[cc]) &
-                                                    (df_compSimResults['teamSuperProp'] == compProps[p1]) &
-                                                    (df_compSimResults['opponentSuperProp'] == compProps[p2]),]
+                                                    (df_compSimResults['teamSuperProp'] == compProps[p2]) &
+                                                    (df_compSimResults['opponentSuperProp'] == compProps[p1]),]
         
                 #Calculate number of bins necessary to allocate one margin point to each bin
                 nBins = np.max(df_currComp['margin']) - np.min(df_currComp['margin']) + 1
@@ -932,18 +943,22 @@ for tt in range(0,len(teamList)):
                 ##### TODO: set x-labels
                         
                 #Set colours of each bars depending on bin value
-                for pp in range(0,len(hx.patches)):
+                #Get the unique values of bins in a sorted list
+                sortedBinVals = np.sort(df_currComp['margin'].unique())
+                for pp in range(0,len(sortedBinVals)):
                     #Check patch value and plot colour accordingly
-                    if np.around(hx.patches[pp].get_x()) < 0:
+                    if sortedBinVals[pp] < 0:
                         hx.patches[pp].set_facecolor(teamCol2)
-                    elif np.around(hx.patches[pp].get_x()) > 0:
+                    elif sortedBinVals[pp] > 0:
                         hx.patches[pp].set_facecolor(teamCol1)
-                        
+                
                 #Add vertical y-line at zero
                 ax[p1,p2].axvline(0, color = 'k',
                                   linestyle = '--', linewidth = 1)
             
-##### TODO: normalise Y-axes for counts, labels etc.
+##### TODO: normalise Y-axes to highest counts, labels etc.
+##### TODO: add titles with team proportions
+##### TODO: add in-graph notations -- % each teams won; M +/- SD margins?
 
 
         
