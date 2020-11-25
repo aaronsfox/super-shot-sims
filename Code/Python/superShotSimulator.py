@@ -7,11 +7,16 @@ Created on Sun Aug 23 21:13:39 2020
     Centre for Sport Research
     Deakin University
     aaron.f@deakin.edu.au
-
-This code runs a series of different simulations based on shooting statistics 
-from the Super Shot period of the Super Netball 2020 season. The main aim of this
-analysis is to understand where optimality may lie for the proportion of a teams
-total shots should be Super Shots.
+    
+    This code initially runs identical analysis to our original PLoS One paper,
+    but just using 2020 statistics instead of 2018 data. The major difference here
+    is that the super shot was in play, and theoretically would effect the long
+    range shooting statistics.
+    
+    After this a series of different simulations are run based on shooting statistics 
+    from the Super Shot period of the Super Netball 2020 season. The main aim of this
+    analysis is to understand where optimality may lie for the proportion of a teams
+    total shots should be Super Shots.
     
 """
 
@@ -101,6 +106,267 @@ df_playerInfo = dataImport['df_playerInfo']
 df_scoreFlow = dataImport['df_scoreFlow']
 df_lineUp = dataImport['df_lineUp']
 df_individualLineUp = dataImport['df_individualLineUp']
+
+# %% REPEAT ANALYSIS: Relative odds of missing
+
+# This section looks at the probability statistics from shots in the inner circle
+# vs. shots in the outer circle and re-evaluates the assessment of whether a 2
+# point value is appropriate for the super shot considering the elevated risk of
+# taking a shot from this distance.
+
+# The analysis here also takes into account the shot statistics firstly from
+# the entire match, but then also looks at just those from the super shot and non-
+# super shot perios. This provides a relative risk for missing from the outer 
+# circle across various aspects of the match.
+
+#Set the number of trials for random sampling
+nTrials = 100000
+
+#Calculate shot statistics, distributions and random sampling
+
+#Inner circle - all match
+madeShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'innerCircle') &
+                                 (df_scoreFlow['shotOutcome'] == True),'shotCircle'])
+missedShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'innerCircle') &
+                                   (df_scoreFlow['shotOutcome'] == False),'shotCircle'])
+betaInnerAll = stats.beta(missedShots,madeShots)
+valsInnerAll = np.random.beta(missedShots, madeShots, size = nTrials)
+
+#Outer circle - all match
+madeShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'outerCircle') &
+                                 (df_scoreFlow['shotOutcome'] == True),'shotCircle'])
+missedShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'outerCircle') &
+                                   (df_scoreFlow['shotOutcome'] == False),'shotCircle'])
+betaOuterAll = stats.beta(missedShots,madeShots)
+valsOuterAll = np.random.beta(missedShots, madeShots, size = nTrials)
+
+#Inner circle - standard period
+madeShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'innerCircle') &
+                                 (df_scoreFlow['shotOutcome'] == True) &
+                                 (df_scoreFlow['periodCategory'] == 'standard'),'shotCircle'])
+missedShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'innerCircle') &
+                                   (df_scoreFlow['shotOutcome'] == False) &
+                                   (df_scoreFlow['periodCategory'] == 'standard'),'shotCircle'])
+betaInnerStandard = stats.beta(missedShots,madeShots)
+valsInnerStandard = np.random.beta(missedShots, madeShots, size = nTrials)
+
+#Outer circle - standard period
+madeShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'outerCircle') &
+                                 (df_scoreFlow['shotOutcome'] == True) &
+                                 (df_scoreFlow['periodCategory'] == 'standard'),'shotCircle'])
+missedShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'outerCircle') &
+                                   (df_scoreFlow['shotOutcome'] == False) &
+                                   (df_scoreFlow['periodCategory'] == 'standard'),'shotCircle'])
+betaOuterStandard = stats.beta(missedShots,madeShots)
+valsOuterStandard = np.random.beta(missedShots, madeShots, size = nTrials)
+
+#Inner circle - super period
+madeShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'innerCircle') &
+                                 (df_scoreFlow['shotOutcome'] == True) &
+                                 (df_scoreFlow['periodCategory'] == 'twoPoint'),'shotCircle'])
+missedShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'innerCircle') &
+                                   (df_scoreFlow['shotOutcome'] == False) &
+                                   (df_scoreFlow['periodCategory'] == 'twoPoint'),'shotCircle'])
+betaInnerSuper = stats.beta(missedShots,madeShots)
+valsInnerSuper = np.random.beta(missedShots, madeShots, size = nTrials)
+
+#Outer circle - super period
+madeShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'outerCircle') &
+                                 (df_scoreFlow['shotOutcome'] == True) &
+                                 (df_scoreFlow['periodCategory'] == 'twoPoint'),'shotCircle'])
+missedShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'outerCircle') &
+                                   (df_scoreFlow['shotOutcome'] == False) &
+                                   (df_scoreFlow['periodCategory'] == 'twoPoint'),'shotCircle'])
+betaOuterSuper = stats.beta(missedShots,madeShots)
+valsOuterSuper = np.random.beta(missedShots, madeShots, size = nTrials)
+
+#Visualise the two distributions as probability density functions over the periods
+#Set the subplot figure to plot on
+fig, ax = plt.subplots(figsize=(9, 3), nrows = 1, ncols = 3)
+x = np.linspace(0,1,1000002)[1:-1] #probability values to plot over
+#All match
+ax[0].plot(x, betaInnerAll.pdf(x), ls = '-', c='blue', label = 'Inner Circle')
+ax[0].plot(x, betaOuterAll.pdf(x), ls = '-', c='red', label = 'Outer Circle')
+ax[0].set_title(r'$\beta$'' Distributions for Missed Shots: All Match',
+                fontweight = 'bold', fontsize = 8)
+ax[0].set_xlabel('$x$') #x label
+ax[0].set_ylabel(r'$p(x|\alpha,\beta)$') #y label
+ax[0].legend() #add legend
+ax[0].set_xlim(0.0,0.6) #Adjust x-limit for better viewing
+#Standard period
+ax[1].plot(x, betaInnerStandard.pdf(x), ls = '-', c='blue', label = 'Inner Circle')
+ax[1].plot(x, betaOuterStandard.pdf(x), ls = '-', c='red', label = 'Outer Circle')
+ax[1].set_title(r'$\beta$'' Distributions for Missed Shots: Standard Period',
+                fontweight = 'bold', fontsize = 8)
+ax[1].set_xlabel('$x$') #x label
+ax[1].set_ylabel(r'$p(x|\alpha,\beta)$') #y label
+ax[1].legend() #add legend
+ax[1].set_xlim(0.0,0.6) #Adjust x-limit for better viewing
+#Super period
+ax[2].plot(x, betaInnerSuper.pdf(x), ls = '-', c='blue', label = 'Inner Circle')
+ax[2].plot(x, betaOuterSuper.pdf(x), ls = '-', c='red', label = 'Outer Circle')
+ax[2].set_title(r'$\beta$'' Distributions for Missed Shots: Power 5 Period',
+                fontweight = 'bold', fontsize = 8)
+ax[2].set_xlabel('$x$') #x label
+ax[2].set_ylabel(r'$p(x|\alpha,\beta)$') #y label
+ax[2].legend() #add legend
+ax[2].set_xlim(0.0,0.6) #Adjust x-limit for better viewing
+#Tight plot layout
+plt.tight_layout()
+
+#Determine how much relatively higher odds of missing from outer circle are to
+#the inner circle
+sampleRatiosAll = valsOuterAll/valsInnerAll
+sampleRatiosStandard = valsOuterStandard/valsInnerStandard
+sampleRatiosSuper = valsOuterSuper/valsInnerSuper
+
+#Visualise the relative sample ratios on a histogram
+fig, ax = plt.subplots(figsize=(9, 3), nrows = 1, ncols = 3)
+ax[0].hist(sampleRatiosAll, bins = 'auto')
+ax[0].set_title('Ratios for Missed Shots in Outer vs. Inner Circle: All Match',
+                fontweight = 'bold', fontsize = 6)
+ax[1].hist(sampleRatiosStandard, bins = 'auto')
+ax[1].set_title('Ratios for Missed Shots in Outer vs. Inner Circle: Standard Period',
+                fontweight = 'bold', fontsize = 6)
+ax[2].hist(sampleRatiosSuper, bins = 'auto')
+ax[2].set_title('Ratios for Missed Shots in Outer vs. Inner Circle: Power 5 Period',
+                fontweight = 'bold', fontsize = 6)
+plt.tight_layout()
+
+#Create values for empirical cumulative distribution function
+cdfSplitAll_x = np.sort(sampleRatiosAll)
+cdfSplitStandard_x = np.sort(sampleRatiosStandard)
+cdfSplitSuper_x = np.sort(sampleRatiosSuper)
+cdfSplit_y = np.arange(1, nTrials+1) / nTrials
+
+#Calculate confidence intervals of the cumulative distribution function
+#Find where the CDF y-values equal 0.05/0.95, or the closest index to this,
+#and grab that index of the x-values
+lower95ind = np.where(cdfSplit_y == 0.05)[0][0]
+upper95ind = np.where(cdfSplit_y == 0.95)[0][0]
+ci95_lowerAll = cdfSplitAll_x[lower95ind]
+ci95_upperAll = cdfSplitAll_x[upper95ind]
+ci95_lowerStandard = cdfSplitStandard_x[lower95ind]
+ci95_upperStandard = cdfSplitStandard_x[upper95ind]
+ci95_lowerSuper = cdfSplitSuper_x[lower95ind]
+ci95_upperSuper = cdfSplitSuper_x[upper95ind]
+
+#Create a string that puts these values together and prints
+print('Relative odds [95% CIs] of missing from outer to inner circle all match: '+str(round(sampleRatiosAll.mean(),2)) + ' [' + str(round(ci95_lowerAll,2)) + ',' + str(round(ci95_upperAll,2)) + ']')
+print('Relative odds [95% CIs] of missing from outer to inner circle in standard periods: '+str(round(sampleRatiosStandard.mean(),2)) + ' [' + str(round(ci95_lowerStandard,2)) + ',' + str(round(ci95_upperStandard,2)) + ']')
+print('Relative odds [95% CIs] of missing from outer to inner circle Power 5 periods: '+str(round(sampleRatiosSuper.mean(),2)) + ' [' + str(round(ci95_lowerSuper,2)) + ',' + str(round(ci95_upperSuper,2)) + ']')
+
+# %% REPEAT ANALYSIS: Tactics (i.e. shot proportions) & scoring with new rules
+
+#Create a list to test for proportions of shots taken inside vs outside
+insideProportions = np.linspace(1.0,0.0,11)
+insideProportionsStr = list(map(str,np.round(insideProportions,1)))
+
+#Create a dataframe to store the goals scored values in
+df_goalsScoredSplit = pd.DataFrame([],columns = insideProportionsStr,
+                                   index = range(0,nTrials))
+df_goalsScoredSplit_2pt = pd.DataFrame([],columns = insideProportionsStr,
+                                       index = range(0,nTrials))
+
+#Calculate average rate of shots each team gets in the Power 5 period
+nMatches = len(df_matchInfo)
+nShotsPer5 = len(df_scoreFlow.loc[(df_scoreFlow['periodCategory'] == 'twoPoint'),'shotCircle']) / nMatches / 4 / 2 #divided across 4 quarters and 2 teams
+
+#Loop through the different proportions and calculate goals scored under the two
+#different scoring rules, considering that missed sampling values for the inside
+#and outside shooting are stored in 'valsInnerSuper' and 'valsOuterSuper'. Note 
+#that this means we're considering shot success probability from the actual 
+#Power 5 periods, which is probably the most accurate assumption.
+
+#Get inside and outside success rates
+insideRates = 1 - valsInnerSuper
+outsideRates = 1 - valsOuterSuper
+
+#Loop through the different proportions
+for pp in range(0,len(insideProportions)):
+
+    #Calculate goals scored for current proportion of inside shots
+    #Add the inside and outside rates together
+    #Standard scoring
+    currGoals = (insideRates * nShotsPer5 * insideProportions[pp]) + (outsideRates * nShotsPer5 * (1-insideProportions[pp]))
+    #2pt scoring
+    currGoals_2pt = (insideRates * nShotsPer5 * insideProportions[pp]) + (outsideRates * nShotsPer5 * (1-insideProportions[pp]) * 2)
+    
+    #Append to relevant column of dataframe
+    df_goalsScoredSplit[insideProportionsStr[pp]] = currGoals
+    df_goalsScoredSplit_2pt[insideProportionsStr[pp]] = currGoals_2pt
+
+#Convert the two different results to a manageable dataframe to visualise with seaborn
+
+#Create a string for the outside shot proportion
+outsideProportion = ['0%','10%','20%','30%','40%','50%','60%','70%','80%','90%','100%']
+
+#Create an empty dataframe with relevant columns
+df_goalsScoredSplit_comparison = pd.DataFrame(columns = ['Goals Scored','Rule System','Outside Shot Proportion'])
+
+#Loop through the standard scoring dataframe
+for pp in range(0,len(insideProportions)):
+    #Create temporary matching dataframe to append to main one
+    df_append = pd.DataFrame(columns = ['Goals Scored','Rule System','Outside Shot Proportion'])
+    #Add the goals scored values
+    df_append['Goals Scored'] = df_goalsScoredSplit[insideProportionsStr[pp]]
+    #Set the labelling variables
+    df_append['Rule System'] = 'Standard'
+    df_append['Outside Shot Proportion'] = outsideProportion[pp]
+    #Append to main dataframe
+    df_goalsScoredSplit_comparison = df_goalsScoredSplit_comparison.append(df_append,ignore_index=True)
+
+#Loop through the new scoring dataframe
+for pp in range(0,len(insideProportions)):
+    #Create temporary matching dataframe to append to main one
+    df_append = pd.DataFrame(columns = ['Goals Scored','Rule System','Outside Shot Proportion'])
+    #Add the goals scored values
+    df_append['Goals Scored'] = df_goalsScoredSplit_2pt[insideProportionsStr[pp]]
+    #Set the labelling variables
+    df_append['Rule System'] = 'Two-Point'
+    df_append['Outside Shot Proportion'] = outsideProportion[pp]
+    #Append to main dataframe
+    df_goalsScoredSplit_comparison = df_goalsScoredSplit_comparison.append(df_append,ignore_index=True)
+
+#Create bar plot
+fig, ax = plt.subplots(figsize=(6,5))
+gx = sns.barplot(x = 'Outside Shot Proportion',
+                 y = 'Goals Scored',
+                 hue = 'Rule System',   
+                 ci = 'sd',
+                 errcolor= '0.0',
+                 errwidth = 2.0,
+                 capsize = 0.0,
+                 zorder = 5,
+                 palette = ['black','darkgray'],
+                 data = df_goalsScoredSplit_comparison)
+
+#Set x and y labels
+gx.set(xlabel = 'Proportion of Shots in Outer Circle',
+       ylabel = 'Points Scored')
+
+#Set y ticks to go from 0-9
+ax.set(ylim = (0.0,7.0))
+ax.yaxis.set_ticks(np.arange(0, 8, step = 1))
+
+#Outline bars with black
+for patch in ax.patches:
+    patch.set_edgecolor('k')
+
+#Set legend details
+#Remove legend title
+handles, labels = ax.get_legend_handles_labels()
+ax.legend(handles=handles[0:], labels=labels[0:])
+# plt.setp(ax.get_legend().get_title(), fontweight ='bold')
+plt.setp(ax.get_legend().get_texts(), fontweight = 'bold')
+
+# NOTE: this approach slightly differs to the simulation approach below, in that
+# it allocates an overall success rate to the scoring (i.e. you get 50% of the
+# score if that's what the overall sucess rate is). This contrasts to below in
+# that each individual shot is given an X% chance of going in, and played against
+# the random probability generator. Due to this, there is basically no chance of
+# the first approach resulting in a score of zero - whereas this can quite readily
+# happen with lower success rates as can be seen in the simulations below.
 
 # %% 'Standard' super shot simulations
 
@@ -1532,14 +1798,64 @@ for nrow in range(0,ax.shape[0]):
 
 #Close figure
 plt.close()
-            
+
+# %% Visualise 'competitive' sim margins
+
+#This firstly requires the data to be manipulated into a dataframe with specific
+#variables and columns to suit the seaborn package
+
+#Create dictionary to append these data to
+marginDict = {'teamName': [], 'teamSuperProp': [],
+              'opponentName': [], 'opponentSuperProp': [],
+              'margin': []}
+
+#Loop through teams and extract their margin results and the proportions
+for tt in range (len(teamList)):
+    
+    #Extract teams data
+    #This is done separately given the need to modify margin
+    df_currTeam1 = df_compSimResults.loc[(df_compSimResults['teamName'] == teamList[tt]),]
+    df_currTeam2 = df_compSimResults.loc[(df_compSimResults['opponentName'] == teamList[tt]),]
+    
+    #Add data to dictionary
+    #First dataframe - use normal margin and 'team' data
+    marginDict['teamName'].extend(list(df_currTeam1['teamName'].values))
+    marginDict['teamSuperProp'].extend(list(df_currTeam1['teamSuperProp'].values))
+    marginDict['opponentName'].extend(list(df_currTeam1['opponentName'].values))
+    marginDict['opponentSuperProp'].extend(list(df_currTeam1['opponentSuperProp'].values))
+    marginDict['margin'].extend(list(df_currTeam1['margin'].values))
+    #Second dataframe - invert margin and use 'opponent' data
+    marginDict['teamName'].extend(list(df_currTeam2['opponentName'].values))
+    marginDict['teamSuperProp'].extend(list(df_currTeam2['opponentSuperProp'].values))
+    marginDict['opponentName'].extend(list(df_currTeam2['teamName'].values))
+    marginDict['opponentSuperProp'].extend(list(df_currTeam2['teamSuperProp'].values))
+    marginDict['margin'].extend(list(df_currTeam2['margin'].values*-1))
+    
+#Convert to dataframe
+df_compSimMargins = pd.DataFrame.from_dict(marginDict)
+
+#### Test plot
+
+#Split to get example of 0% prop vs. 100% prop opponent
+df_currPlot = df_compSimMargins.loc[(df_compSimMargins['teamSuperProp'] == 0.0) &
+                                    (df_compSimMargins['opponentSuperProp'] == 1.0),]
+
+sns.boxplot(x = 'teamName', y = 'margin',
+            hue = 'teamName', palette = list(colourDict.values()),
+            dodge = False, whis = [0,100],
+            data = df_currPlot)
+
+##### Edits:
+    ##### Turn off legend, convert to white with coloured outlimne,
+    ##### add dashed line at zero (underneath), box width for separating plots,
+    ##### subplot for 0% vs. others, edit cap width
         
 # %% TODO:
     
 # Add some summary statistics (mean, range, IQR's etc.) printed out to table
 # Essentially the box plot data in tabular form
 
-# SUmmary figures/tables across individual teams as the data points to group data
+# Summary figures/tables across individual teams as the data points to group data
 
         
 # %%
