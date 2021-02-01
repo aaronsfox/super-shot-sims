@@ -1,0 +1,99 @@
+---
+title: Short Paper
+author:
+  - name: Aaron S. Fox
+    affiliation: Centre for Sport Research
+    footnote: 1
+  - name: Tanisha Bardzinski
+    affiliation: Centre for Sport Research
+  - name: Lyndell Bruce
+    affiliation: Centre for Sport Research
+address:
+  - code: Centre for Sports Research
+    address: Centre for Sports Research, School of Exercise and Nutrition Sciences, Deakin University, Geelong, Australia
+footnote:
+  - code: 1
+    text: "Corresponding Author: aaron.f@deakin.edu.au"
+abstract: |
+  Insert abstract...
+
+journal: SportR$\chi$iv
+date: "Version 1.0; Last Updated:`r Sys.Date()`"
+bibliography: mybibfile.bib
+#linenumbers: true
+#numbersections: true
+csl: elsevier-harvard.csl
+output: rticles::elsevier_article
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE)
+
+#Multiple knit options - in YAML
+# knit: (function(inputFile, encoding) {
+#   rmarkdown::render(inputFile, encoding = encoding,
+#   output_format = "all") })
+
+
+```
+
+# Introduction
+
+***TODO: Check the below introduction...taken from performance paper...***
+
+Netball is a court-based team sport played predominantly among Commonwealth nations, and has one of the highest participation rates for team sports in Australia [@AustralianSportsCommission2020]. As in many court-based team sports, the goal of netball is to score more than the opposition. Netball is, however, unique in that goals may only be scored by two players on each team from within the 'shooting circle' (i.e. a half circle around the goal with a 4.9m radius) at their end of the court [@INFrules]. Traditionally, goals scored from within this circle result in one 'goal' or 'point' for the team [@INFrules]. In the 2020 season, Australia's national elite-level league (i.e. Suncorp Super Netball) made the decision to introduce the 'Super Shot' [@NetballAusSuperShotIntro]. The Super Shot period provided teams an opportunity to gain one- versus two-points for successful shots made from the 'inner' (i.e. 0m-3.0m) versus 'outer' (i.e. 3.0m-4.9m), respectively, within the final five minutes of each quarter [@NetballAusSuperShotIntro]. 
+
+Altered scoring rules in other sports have provided teams an opportunity to adjust their tactical approach and be a catalyst for a change in game style. Perhaps the best parallel to netball and the introduction of the Super Shot is the introduction of the three-point line to the National Basketball Association (NBA). The NBA has seen a shift in play style towards a greater number of three-point attempts in recent years. When introduced in 1979, teams took 2.8 three-point shots on average — which dramatically contrasts to the 34.1 three-point shots per game in the most recent 2019-20 season [@basketballRefWeb]. This increase appears to have come at the cost of the 'mid-range' shot in the modern game [@basketballRefWeb]. It is possible that the introduction of the Super Shot could see similar tactical shifts in shooting strategies of netball teams. Teams will typically implement attacking strategies that generate shots as close to the goal as possible to maximise accuracy. 'Long-range' shots (i.e. > 3.0m) are mostly avoided [@ourPLOSOneRef] given the greater risk of missing, without any added benefit. The presence of the Super Shot now provides teams with a choice surrounding shooting strategy tactics, whereby they may alter their attacking strategies to generate long-range shots deemed as high-risk in the past due to the added value of an extra point.
+
+The first year of the new Super Shot rule provides an opportunity to examine how the various teams approached Super Shots from a tactical perspective, and the potential impact of this on performance.
+
+The league has confirmed that the Super Shot rule will continue through the upcoming 2021 season [@announcementRef].
+
+***TODO: check introduction as per above note***
+
+
+***TODO: Purpose and aims***
+
+
+# Methods
+
+...
+
+...combination of coded and publicly available data...
+
+Our approach in the present paper to simulate Super Shot scoring periods differs to our original work [@Fox2020]. Previously, we allocated an overall success rate to shots from the inner versus outer circle (i.e. if the sampled probability was 50%, a total of 50% of shots were counted as successful). This contrasts to our present work, where we sample and apply the probability of shot success to simulated individual shots (i.e. if the sampled probability is 50%, the individual shot being simulated has a 50% probability of success). This approach likely reflects an improvement on our analysis, better representing the independent nature of shots in a netball match.
+
+
+
+
+# Results
+
+...
+
+
+
+
+# Discussion
+
+...
+
+# Conclusion
+
+...
+
+
+
+Bibliography styles
+===================
+
+There are various bibliography styles available. You can select the
+style of your choice in the preamble of this document. These styles are
+Elsevier styles based on standard styles like Harvard and Vancouver.
+Please use BibTeX to generate your bibliography and include DOIs
+whenever available.
+
+Here are two sample references: @Feynman1963118 [@Dirac1953888].
+
+References {#references .unnumbered}
+==========
