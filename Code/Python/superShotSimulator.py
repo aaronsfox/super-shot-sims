@@ -109,6 +109,10 @@ df_individualLineUp = dataImport['df_individualLineUp']
 
 # %% REPEAT ANALYSIS: Relative odds of missing
 
+##### TODO: do this in general, along with across the different attacking teams against
+##### all other defnsive teams; as well as all teams in general vs. specific defensive 
+##### teams...
+
 # This section looks at the probability statistics from shots in the inner circle
 # vs. shots in the outer circle and re-evaluates the assessment of whether a 2
 # point value is appropriate for the super shot considering the elevated risk of

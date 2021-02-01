@@ -66,6 +66,8 @@ Our approach in the present paper to simulate Super Shot scoring periods differs
 
 
 
+- Include some probability calculations of winning vs. losing the 5 minute period (i.e. X team's relative probability of winning vs. losing the super shot period under different proportions; or maybe even between proportions?)
+
 
 # Results
 
@@ -77,6 +79,14 @@ Our approach in the present paper to simulate Super Shot scoring periods differs
 # Discussion
 
 ...
+
+Discussion points...
+- Consideration around our newly calculated relative risk of missing with respect to point value. Higher than previous, so now is the Super Shot worth taking? We could also do this specifically against a team as well as overall (i.e. what is the relative risk of make vs. miss for specific teams or against specific teams)
+- General/overall value with respect to different proportions?
+- Team specific values, any obvious differences? For example, one team may have had better success and therefore using a higher proportion in general may have led to higher percentage of 'won' periods
+- Team vs. team specific values and if they are different across various opponents. For example, better shooting success with high super shot proportions vs. one team but not another? This may be more relevant if we use opponent specific probabilities of super shot success. Important that the lack of 'defensive' presence within simulations is acknowledged as a limitation, in that we applied the same super shot probability rates for each team from their entire season, rather than individually vs. their oposition team. Given we might have some relative risk of missing against different defensive opponents, this may actually reveal that this should be a consideration if one team is more effective with their defense
+- Practical considerations of work include strategising around super shot, with respect to how many to take perhaps depending on margin along with opposition, as well as own teams success in this realm
+
 
 # Conclusion
 
