@@ -368,6 +368,13 @@ plt.setp(ax.get_legend().get_texts(), fontweight = 'bold')
 # the first approach resulting in a score of zero - whereas this can quite readily
 # happen with lower success rates as can be seen in the simulations below.
 
+# %% TODO: SIMULATIONS
+
+# Store the simulation results in some fashion so they don't need to be repeated
+# Use an if statement to do this
+# Leave a not that they can be repeated given seeds are set and get same result
+# Can tweak the results by altering the seeds
+
 # %% 'Standard' super shot simulations
 
 # This section takes the shooting statistics of each team for the season, and
@@ -824,7 +831,7 @@ for tt in range(0,len(teamList)):
 #Set nSims variable for this, in case one wants to change it
 nSims = 1000
 
-#Generate values for the number of shpts in power 5 periods across the league
+#Generate values for the number of shots in power 5 periods across the league
 #This also grabs the proportions of these shots performed by the 'home' team as
 #a means to later allocate the proportion of the total shots to a team in the sims
 leagueShots = list()
@@ -1155,651 +1162,38 @@ df_compSimResults = pd.DataFrame.from_dict(compSimResults)
 
 # %% Visualise 'competitive' sims
 
-# We conduct various visualisations here. Firstly, compare each relevant match
-# up between teams to see how these individual comparisons shake out. A better
-# comparison here though is looking at each teams match-up against everyone else
-# in total -- which gives an idea of overall strategy for each team.
+# Firstly, compare each relevant match up between teams to see how these
+# individual comparisons shake out. A better comparison here though is looking
+# at each teams match-up against everyone else in total -- which gives an idea
+# of overall strategy for each team.
 
-##### TODO: add over to fig helper function
-
-#Compare over each iteration of 'match-ups'
+#Compare individual teams over each iteration of 'match-ups'
 for tt in range(0,len(teamList)):
     for cc in range(0,len(teamList)):
         
         #Set a condition to only plot if team names don't match
         if teamList[tt] != teamList[cc]:
             
-            #Get each teams colour
-            teamCol1 = colourDict[teamList[tt]]
-            teamCol2 = colourDict[teamList[cc]]
+            #Set teams
+            team1 = teamList[tt]
+            team2 = teamList[cc]
             
-            #Set an array to store win % in
-            winProps = np.zeros([len(compProps),len(compProps)])
-            lossProps = np.zeros([len(compProps),len(compProps)])
-            
-            #Set an array to store mean/SD win and loss margins
-            winMarginM = np.zeros([len(compProps),len(compProps)])
-            winMarginSD = np.zeros([len(compProps),len(compProps)])
-            lossMarginM = np.zeros([len(compProps),len(compProps)])
-            lossMarginSD = np.zeros([len(compProps),len(compProps)])
-            
-            #Set the subplot figure to plot on
-            fig, ax = plt.subplots(figsize=(11, 11), nrows = 5, ncols = 5)
-            
-            #Loop through the simulated proportions for each team
-            for p1 in range(0,len(compProps)):
-                for p2 in range(0,len(compProps)):
-                    
-                    #Extract current match up
-                    #This needs a condition in place to grab the appropriate 
-                    #proportions for the relevant teams based on position in 
-                    #the team list
-                    if tt < cc:
-                        df_currComp = df_compSimResults.loc[(df_compSimResults['teamName'] == teamList[tt]) &
-                                                            (df_compSimResults['opponentName'] == teamList[cc]) &
-                                                            (df_compSimResults['teamSuperProp'] == compProps[p2]) &
-                                                            (df_compSimResults['opponentSuperProp'] == compProps[p1]),]
-                    elif cc < tt:
-                        df_currComp = df_compSimResults.loc[(df_compSimResults['teamName'] == teamList[cc]) &
-                                                            (df_compSimResults['opponentName'] == teamList[tt]) &
-                                                            (df_compSimResults['teamSuperProp'] == compProps[p1]) &
-                                                            (df_compSimResults['opponentSuperProp'] == compProps[p2]),]
-                        #Similarly, if the team order is flipped, the margins
-                        #for these comparisons need to be inverted to plot
-                        #properly
-                        df_currComp['margin'] = df_currComp['margin'] * -1
-                        
-                    #Calculate number of bins necessary to allocate one margin point to each bin
-                    #Put condition in place to have 2 point margin bins for when
-                    #both teams are at 100%, as odd margins aren't possible
-                    if p1 == len(compProps)-1 & p2 == len(compProps)-1:
-                        nBins = (np.max(df_currComp['margin']) - np.min(df_currComp['margin']) + 2) / 2
-                    else:
-                        nBins = np.max(df_currComp['margin']) - np.min(df_currComp['margin']) + 1
-                    
-                    #Calculate proportion of wins & losses for current 'team'
-                    winProps[p1,p2] = sum(n > 0 for n in list(df_currComp['margin'])) / len(df_currComp['margin'])
-                    lossProps[p1,p2] = sum(n < 0 for n in list(df_currComp['margin'])) / len(df_currComp['margin'])
-                    
-                    #Calculate mean and SD win and loss margins
-                    winMarginM[p1,p2] = df_currComp.loc[(df_currComp['margin'] > 0),['margin']].mean()[0]
-                    winMarginSD[p1,p2] = df_currComp.loc[(df_currComp['margin'] > 0),['margin']].std()[0]
-                    lossMarginM[p1,p2] = df_currComp.loc[(df_currComp['margin'] < 0),['margin']].mean()[0]
-                    lossMarginSD[p1,p2] = df_currComp.loc[(df_currComp['margin'] < 0),['margin']].std()[0]
-                    
-                    #Plot the current histogram
-                    #Note that this distplot function works with seaborn 0.10, but
-                    #has been slated for removal in later versions
-                    hx = sns.distplot(df_currComp['margin'], kde = False,
-                                      bins = int(nBins), color = 'grey',
-                                      ax = ax[p1,p2],
-                                      hist_kws = {'alpha': 0.75,
-                                                  'linewidth': 1.0})
-                            
-                    #Set colours of each bars depending on bin value
-                    #Get the unique values of bins in a sorted list
-                    sortedBinVals = np.linspace(np.min(df_currComp['margin']),
-                                                np.max(df_currComp['margin']),
-                                                int(nBins))
-                    for pp in range(0,len(sortedBinVals)):
-                        #Check bin value and plot colour accordingly
-                        if sortedBinVals[pp] < 0:
-                            hx.patches[pp].set_facecolor(teamCol2)
-                            hx.patches[pp].set_edgecolor(teamCol2)
-                        elif sortedBinVals[pp] > 0:
-                            hx.patches[pp].set_facecolor(teamCol1)
-                            hx.patches[pp].set_edgecolor(teamCol1)
-                        # elif sortedBinVals[pp] == 0:
-                        #     hx.patches[pp].set_edgecolor('k')
-                        #Add vertical line if zero
-                        elif sortedBinVals[pp] == 0:
-                            ax[p1,p2].axvline(0,color = 'k',
-                                              linestyle = '--', linewidth = 0.5)
-                    
-                    #Set title
-                    #This requires some manipulation and trickery to have a multi
-                    #coloured title in the right place.
-                    #First, we place a dummy title in the spot that we want
-                    #This full title can only be one text colour, so we will 
-                    #have to replace it
-                    txt = ax[p1,p2].text(0.5, 1.075,
-                                         teamList[cc]+' '+str(math.trunc(compProps[p1]*100))+'% / '+
-                                         teamList[tt]+' '+str(math.trunc(compProps[p2]*100))+'%',
-                                         ha = 'center', fontsize = 9,
-                                         transform = ax[p1,p2].transAxes)
-                    #We get the bounding box associated with this text
-                    bb = txt.get_window_extent(renderer = fig.canvas.get_renderer())
-                    #We then transform the bounding box to the axes coordinates
-                    transf = ax[p1,p2].transAxes.inverted()
-                    bbAx = bb.transformed(transf)
-                    #Next, grab the width of the bounding box
-                    titleWidth = bbAx.width
-                    #With this info we can now remove the original text
-                    txt.remove()
-                    #With the title width, we can place the team names appropriately
-                    #and do this separately to get different colours
-                    #Set opponent as left figure title and colour
-                    txt1 = ax[p1,p2].text(0.5 - titleWidth/2, 1.075,
-                                          teamList[cc]+' '+str(math.trunc(compProps[p1]*100))+'%',
-                                          ha = 'left', fontsize = 9,
-                                          color = teamCol2,
-                                          transform = ax[p1,p2].transAxes)
-                    #Set team as right figure title and colour
-                    txt2 = ax[p1,p2].text(0.5 + titleWidth/2, 1.075,
-                                          teamList[tt]+' '+str(math.trunc(compProps[p2]*100))+'%',
-                                          ha = 'right', fontsize = 9,
-                                          color = teamCol1,
-                                          transform = ax[p1,p2].transAxes)
-                    #Now we just need to place the black slash in the middle
-                    #We do this with a similar process to above, but now just
-                    #grab the edges of the boxes associated with the team names
-                    bb1 = txt1.get_window_extent(renderer = fig.canvas.get_renderer())
-                    bbAx1 = bb1.transformed(transf)
-                    txt1width = bbAx1.width
-                    bb2 = txt2.get_window_extent(renderer = fig.canvas.get_renderer())
-                    bbAx2 = bb2.transformed(transf)
-                    txt2width = bbAx2.width
-                    #Figure out the midpoint between the two text boxes
-                    midPt = (((0.5 - titleWidth/2) + txt1width) + ((0.5 + titleWidth/2) - txt2width)) / 2
-                    #Add the slash text centred around midpoint
-                    ax[p1,p2].text(midPt, 1.075, ' / ', ha = 'center', fontsize = 9,
-                                   color = 'k', transform = ax[p1,p2].transAxes)
-                                        
-            #Identify max y height of bars and set all y-axes to this limit
-            maxY = 0 #blank starting value
-            for aa in range(0,len(fig.get_axes())):
-                #Loop through patches of current axes and get heights, replace if 
-                #greater than current limit
-                for hh in range(0,len(fig.get_axes()[aa].patches)):
-                    #Get current axes y limit and append if greater than current max
-                    if fig.get_axes()[aa].patches[hh].get_height() > maxY:
-                        maxY = fig.get_axes()[aa].patches[hh].get_height()
-                    
-            #Reset to nearest 25 ceiling
-            maxY = 25 * math.ceil(maxY/25)
-            for aa in range(0,len(fig.get_axes())):
-                fig.get_axes()[aa].set_ylim([0,maxY])
-                
-            #Set min and max X starting values to the min and max margins
-            minX = np.min(df_currComp['margin'])
-            maxX = np.max(df_currComp['margin'])
-                    
-            #Reset to nearest 5 floor/ceiling
-            minX = 5 * math.floor(minX/5)
-            maxX = 5 * math.ceil(maxX/5)
-            #Set the x-ticks
-            for aa in range(0,len(fig.get_axes())):
-                fig.get_axes()[aa].set_xlim([minX,maxX])
-            
-            #Set y-axes ticks to 25 intervals.
-            #Set tick and axes labels only on first column
-            for ncol in range(0,ax.shape[1]):
-                for nrow in range(0,ax.shape[0]):
-                    #Set ticks
-                    ax[nrow,ncol].set_yticks(np.linspace(0,maxY,int(maxY/25+1)))
-                    #Set labels and fontsize
-                    axLabels = list(np.linspace(0,maxY,int(maxY/25+1)))
-                    axLabels = [math.trunc(value) for value in axLabels]
-                    ax[nrow,ncol].set_yticklabels(axLabels, fontsize = 8)
-                    #Set y-label if on first column
-                    if ncol == 0:
-                        ax[nrow,ncol].set_ylabel('Count', fontsize = 9)
-                    else:
-                        #Remove label
-                        ax[nrow,ncol].set_ylabel('')
-                        
-            #Set x-axes ticks to 5 intervals.
-            #Set tick and axes labels only on bottom row
-            for ncol in range(0,ax.shape[1]):
-                for nrow in range(0,ax.shape[0]):
-                    #Set ticks
-                    ax[nrow,ncol].set_xticks(np.linspace(minX,maxX,int(((maxX-minX)/5)+1)))
-                    #Set labels and fontsize
-                    axLabels = list(np.linspace(minX,maxX,int(((maxX-minX)/5)+1)))
-                    axLabels = [math.trunc(value) for value in axLabels]
-                    ax[nrow,ncol].set_xticklabels(axLabels, fontsize = 8)
-                    #Set y-label if on first column
-                    if nrow == ax.shape[0]-1:
-                        ax[nrow,ncol].set_xlabel('Margin', fontsize = 9)
-                    else:
-                        #Remove label
-                        ax[nrow,ncol].set_xlabel('')
-                        
-            #Set tight figure layout
-            plt.tight_layout()
-            
-            #Add win proportion text annotations to each axes
-            for nrow in range(0,ax.shape[0]):
-                for ncol in range(0,ax.shape[1]):
-                    #Set loss proportion (i.e. opposition wins)
-                    ax[nrow,ncol].text(0.05, 0.825,
-                                       str(round(lossProps[nrow,ncol]*100,1))+'%\n'+
-                                       str(round(lossMarginM[nrow,ncol],1))+' '+u'\u00B1'+' '+str(round(lossMarginSD[nrow,ncol],1)),
-                                       ha = 'left', fontsize = 8,
-                                       color = teamCol2,
-                                       transform = ax[nrow,ncol].transAxes)
-                    #Set win proportion (i.e. team wins)
-                    ax[nrow,ncol].text(0.95, 0.825,
-                                       str(round(winProps[nrow,ncol]*100,1))+'%\n'+
-                                       str(round(winMarginM[nrow,ncol],1))+' '+u'\u00B1'+' '+str(round(winMarginSD[nrow,ncol],1)),
-                                       ha = 'right', fontsize = 8,
-                                       color = teamCol1,
-                                       transform = ax[nrow,ncol].transAxes)
-            
-            ##### TODO: save figures 
-            
-            #Close figure
-            plt.close()
-                    
-###############            
+            #Plot figure
+            figHelper.indCompSimVis(df_compSimResults, team1, team2, compProps, colourDict,
+                                   tt, cc, saveDir = '..\\competitiveSims\\figures')
 
 #Compare each teams match-ups against all other teams
 for tt in range(0,len(teamList)):
     
-    #Get the current teams colour
-    teamCol = colourDict[teamList[tt]]
+    #Plot figure
+    figHelper.allCompSimVis(df_compSimResults, teamList[tt], compProps, colourDict,
+                            saveDir = '..\\competitiveSims\\figures')
     
-    #Set an array to store win % in
-    winProps = np.zeros([len(compProps),len(compProps)])
-    lossProps = np.zeros([len(compProps),len(compProps)])
-    
-    #Set an array to store mean/SD win and loss margins
-    winMarginM = np.zeros([len(compProps),len(compProps)])
-    winMarginSD = np.zeros([len(compProps),len(compProps)])
-    lossMarginM = np.zeros([len(compProps),len(compProps)])
-    lossMarginSD = np.zeros([len(compProps),len(compProps)])
-    
-    #Set the subplot figure to plot on
-    fig, ax = plt.subplots(figsize=(11, 11), nrows = 5, ncols = 5)
-    
-    #Loop through the simulated proportions for each team
-    for p1 in range(0,len(compProps)):
-        for p2 in range(0,len(compProps)):
-            
-            #Extract current teams data and the relevant proportions
-            #Note this is done separately to account for the fact that sometimes
-            #the current team might be the 'team' or the 'opponent'
-            df_currComp1 = df_compSimResults.loc[(df_compSimResults['teamName'] == teamList[tt]) &
-                                                 (df_compSimResults['teamSuperProp'] == compProps[p2])&
-                                                 (df_compSimResults['opponentName'] != teamList[tt]) &
-                                                 (df_compSimResults['opponentSuperProp'] == compProps[p1]),]
-            df_currComp2 = df_compSimResults.loc[(df_compSimResults['opponentName'] == teamList[tt]) &
-                                                 (df_compSimResults['opponentSuperProp'] == compProps[p2]) &
-                                                 (df_compSimResults['teamName'] != teamList[tt]) &
-                                                 (df_compSimResults['teamSuperProp'] == compProps[p1]),]
-            #For the second dataframe, the margin needs to be flipped to be
-            #relative to the current team of interest
-            df_currComp2['margin'] = df_currComp2['margin'] * -1
-            
-            #Now the two dataframes can be concatenated together
-            df_currComp = pd.concat([df_currComp1,df_currComp2])
-                
-            #Calculate number of bins necessary to allocate one margin point to each bin
-            #Put condition in place to have 2 point margin bins for when
-            #both teams are at 100%, as odd margins aren't possible
-            if p1 == len(compProps)-1 & p2 == len(compProps)-1:
-                nBins = (np.max(df_currComp['margin']) - np.min(df_currComp['margin']) + 2) / 2
-            else:
-                nBins = np.max(df_currComp['margin']) - np.min(df_currComp['margin']) + 1
-            
-            #Calculate proportion of wins & losses for current 'team'
-            winProps[p1,p2] = sum(n > 0 for n in list(df_currComp['margin'])) / len(df_currComp['margin'])
-            lossProps[p1,p2] = sum(n < 0 for n in list(df_currComp['margin'])) / len(df_currComp['margin'])
-            
-            #Calculate mean and SD win and loss margins
-            winMarginM[p1,p2] = df_currComp.loc[(df_currComp['margin'] > 0),['margin']].mean()[0]
-            winMarginSD[p1,p2] = df_currComp.loc[(df_currComp['margin'] > 0),['margin']].std()[0]
-            lossMarginM[p1,p2] = df_currComp.loc[(df_currComp['margin'] < 0),['margin']].mean()[0]
-            lossMarginSD[p1,p2] = df_currComp.loc[(df_currComp['margin'] < 0),['margin']].std()[0]
-            
-            #Plot the current histogram
-            #Note that this distplot function works with seaborn 0.10, but
-            #has been slated for removal in later versions
-            hx = sns.distplot(df_currComp['margin'], kde = False,
-                              bins = int(nBins), color = 'grey',
-                              ax = ax[p1,p2],
-                              hist_kws = {'alpha': 0.75,
-                                          'linewidth': 1.0})
-            
-            #Set colours of each bars depending on bin value
-            #For this one, we'll fill the bars the team wins, and not the bars
-            #the team loses (i.e. fill them white)
-            #Get the unique values of bins in a sorted list
-            sortedBinVals = np.linspace(np.min(df_currComp['margin']),
-                                        np.max(df_currComp['margin']),
-                                        int(nBins))
-            for pp in range(0,len(sortedBinVals)):
-                #Check bin value and plot colour accordingly
-                if sortedBinVals[pp] < 0:
-                    hx.patches[pp].set_facecolor('w')
-                    hx.patches[pp].set_edgecolor(teamCol)
-                elif sortedBinVals[pp] > 0:
-                    hx.patches[pp].set_facecolor(teamCol)
-                    hx.patches[pp].set_edgecolor(teamCol)
-                # elif sortedBinVals[pp] == 0:
-                #     hx.patches[pp].set_edgecolor('k')
-                #Add vertical line if zero
-                elif sortedBinVals[pp] == 0:
-                    ax[p1,p2].axvline(0,color = 'k',
-                                      linestyle = '--', linewidth = 0.5)
-            
-            #Set title
-            #This requires some manipulation and trickery to have a multi
-            #coloured title in the right place.
-            #First, we place a dummy title in the spot that we want
-            #This full title can only be one text colour, so we will 
-            #have to replace it
-            txt = ax[p1,p2].text(0.5, 1.075,
-                                 'Others '+str(math.trunc(compProps[p1]*100))+'% / '+
-                                 teamList[tt]+' '+str(math.trunc(compProps[p2]*100))+'%',
-                                 ha = 'center', fontsize = 9,
-                                 transform = ax[p1,p2].transAxes)
-            #We get the bounding box associated with this text
-            bb = txt.get_window_extent(renderer = fig.canvas.get_renderer())
-            #We then transform the bounding box to the axes coordinates
-            transf = ax[p1,p2].transAxes.inverted()
-            bbAx = bb.transformed(transf)
-            #Next, grab the width of the bounding box
-            titleWidth = bbAx.width
-            #With this info we can now remove the original text
-            txt.remove()
-            #With the title width, we can place the team names appropriately
-            #and do this separately to get different colours
-            #Set opponent as left figure title and colour
-            txt1 = ax[p1,p2].text(0.5 - titleWidth/2, 1.075,
-                                  'Others '+str(math.trunc(compProps[p1]*100))+'%',
-                                  ha = 'left', fontsize = 9,
-                                  color = 'k',
-                                  transform = ax[p1,p2].transAxes)
-            #Set team as right figure title and colour
-            txt2 = ax[p1,p2].text(0.5 + titleWidth/2, 1.075,
-                                  teamList[tt]+' '+str(math.trunc(compProps[p2]*100))+'%',
-                                  ha = 'right', fontsize = 9,
-                                  color = teamCol,
-                                  transform = ax[p1,p2].transAxes)
-            #Now we just need to place the black slash in the middle
-            #We do this with a similar process to above, but now just
-            #grab the edges of the boxes associated with the team names
-            bb1 = txt1.get_window_extent(renderer = fig.canvas.get_renderer())
-            bbAx1 = bb1.transformed(transf)
-            txt1width = bbAx1.width
-            bb2 = txt2.get_window_extent(renderer = fig.canvas.get_renderer())
-            bbAx2 = bb2.transformed(transf)
-            txt2width = bbAx2.width
-            #Figure out the midpoint between the two text boxes
-            midPt = (((0.5 - titleWidth/2) + txt1width) + ((0.5 + titleWidth/2) - txt2width)) / 2
-            #Add the slash text centred around midpoint
-            ax[p1,p2].text(midPt, 1.075, ' / ', ha = 'center', fontsize = 9,
-                           color = 'k', transform = ax[p1,p2].transAxes)
-            
-    #Identify max y height of bars and set all y-axes to this limit
-    maxY = 0 #blank starting value
-    for aa in range(0,len(fig.get_axes())):
-        #Loop through patches of current axes and get heights, replace if 
-        #greater than current limit
-        for hh in range(0,len(fig.get_axes()[aa].patches)):
-            #Get current axes y limit and append if greater than current max
-            if fig.get_axes()[aa].patches[hh].get_height() > maxY:
-                maxY = fig.get_axes()[aa].patches[hh].get_height()
-            
-    #Reset to nearest 250 ceiling
-    maxY = 250 * math.ceil(maxY/250)
-    for aa in range(0,len(fig.get_axes())):
-        fig.get_axes()[aa].set_ylim([0,maxY])
-        
-    #Set min and max X starting values to the min and max margins
-    minX = np.min(df_currComp['margin'])
-    maxX = np.max(df_currComp['margin'])
-            
-    #Reset to nearest 5 floor/ceiling
-    minX = 5 * math.floor(minX/5)
-    maxX = 5 * math.ceil(maxX/5)
-    #Set the x-ticks
-    for aa in range(0,len(fig.get_axes())):
-        fig.get_axes()[aa].set_xlim([minX,maxX])
-    
-    #Set y-axes ticks to 250 intervals.
-    #Set tick and axes labels only on first column
-    for ncol in range(0,ax.shape[1]):
-        for nrow in range(0,ax.shape[0]):
-            #Set ticks
-            ax[nrow,ncol].set_yticks(np.linspace(0,maxY,int(maxY/250+1)))
-            #Set labels and fontsize
-            axLabels = list(np.linspace(0,maxY,int(maxY/250+1)))
-            axLabels = [math.trunc(value) for value in axLabels]
-            ax[nrow,ncol].set_yticklabels(axLabels, fontsize = 8)
-            #Set y-label if on first column
-            if ncol == 0:
-                ax[nrow,ncol].set_ylabel('Count', fontsize = 9)
-            else:
-                #Remove label
-                ax[nrow,ncol].set_ylabel('')
-                
-    #Set x-axes ticks to 5 intervals.
-    #Set tick and axes labels only on bottom row
-    for ncol in range(0,ax.shape[1]):
-        for nrow in range(0,ax.shape[0]):
-            #Set ticks
-            ax[nrow,ncol].set_xticks(np.linspace(minX,maxX,int(((maxX-minX)/5)+1)))
-            #Set labels and fontsize
-            axLabels = list(np.linspace(minX,maxX,int(((maxX-minX)/5)+1)))
-            axLabels = [math.trunc(value) for value in axLabels]
-            ax[nrow,ncol].set_xticklabels(axLabels, fontsize = 8)
-            #Set y-label if on first column
-            if nrow == ax.shape[0]-1:
-                ax[nrow,ncol].set_xlabel('Margin', fontsize = 9)
-            else:
-                #Remove label
-                ax[nrow,ncol].set_xlabel('')
-                
-    #Set tight figure layout
-    plt.tight_layout()
-    
-    #Add win proportion text annotations to each axes
-    for nrow in range(0,ax.shape[0]):
-        for ncol in range(0,ax.shape[1]):
-            #Set loss proportion (i.e. opposition wins)
-            ax[nrow,ncol].text(0.05, 0.825,
-                               str(round(lossProps[nrow,ncol]*100,1))+'%\n'+
-                               str(round(lossMarginM[nrow,ncol],1))+' '+u'\u00B1'+' '+str(round(lossMarginSD[nrow,ncol],1)),
-                               ha = 'left', fontsize = 8,
-                               color = 'k',
-                               transform = ax[nrow,ncol].transAxes)
-            #Set win proportion (i.e. team wins)
-            ax[nrow,ncol].text(0.95, 0.825,
-                               str(round(winProps[nrow,ncol]*100,1))+'%\n'+
-                               str(round(winMarginM[nrow,ncol],1))+' '+u'\u00B1'+' '+str(round(winMarginSD[nrow,ncol],1)),
-                               ha = 'right', fontsize = 8,
-                               color = teamCol,
-                               transform = ax[nrow,ncol].transAxes)
-    
-    ##### TODO: save figures 
-    
-    #Close figure
-    plt.close()
-    
-#################
+#Compare grouped results across all teams for super shot proportions
+figHelper.groupedCompSimVis(df_compSimResults, compProps,
+                            saveDir = '..\\competitiveSims\\figures')
 
-#Compare the various proportions for every team
-
-#Set the two colours for win (green) vs. loss (red)
-winCol = '#008708'
-lossCol = '#c10000'
-
-#Set an array to store win % in
-winProps = np.zeros([len(compProps),len(compProps)])
-lossProps = np.zeros([len(compProps),len(compProps)])
-
-#Set an array to store mean/SD win and loss margins
-winMarginM = np.zeros([len(compProps),len(compProps)])
-winMarginSD = np.zeros([len(compProps),len(compProps)])
-lossMarginM = np.zeros([len(compProps),len(compProps)])
-lossMarginSD = np.zeros([len(compProps),len(compProps)])
-
-#Set the subplot figure to plot on
-fig, ax = plt.subplots(figsize=(11, 11), nrows = 5, ncols = 5)
-
-#Loop through the simulated proportions for each team
-for p1 in range(0,len(compProps)):
-    for p2 in range(0,len(compProps)):
-        
-        #Extract all teams data and the relevant proportions
-        #Note this is done separately to account for the fact that sometimes
-        #the current team might be the 'team' or the 'opponent'
-        df_currComp1 = df_compSimResults.loc[(df_compSimResults['teamSuperProp'] == compProps[p2])&
-                                             (df_compSimResults['opponentSuperProp'] == compProps[p1]),]
-        df_currComp2 = df_compSimResults.loc[(df_compSimResults['opponentSuperProp'] == compProps[p2]) &
-                                             (df_compSimResults['teamSuperProp'] == compProps[p1]),]
-        #For the second dataframe, the margin needs to be flipped to be
-        #relative to the current team of interest
-        df_currComp2['margin'] = df_currComp2['margin'] * -1
-        
-        #Now the two dataframes can be concatenated together
-        df_currComp = pd.concat([df_currComp1,df_currComp2])
-            
-        #Calculate number of bins necessary to allocate one margin point to each bin
-        #Put condition in place to have 2 point margin bins for when
-        #both teams are at 100%, as odd margins aren't possible
-        if p1 == len(compProps)-1 & p2 == len(compProps)-1:
-            nBins = (np.max(df_currComp['margin']) - np.min(df_currComp['margin']) + 2) / 2
-        else:
-            nBins = np.max(df_currComp['margin']) - np.min(df_currComp['margin']) + 1
-        
-        #Calculate proportion of wins & losses for current 'team'
-        winProps[p1,p2] = sum(n > 0 for n in list(df_currComp['margin'])) / len(df_currComp['margin'])
-        lossProps[p1,p2] = sum(n < 0 for n in list(df_currComp['margin'])) / len(df_currComp['margin'])
-        
-        #Calculate mean and SD win and loss margins
-        winMarginM[p1,p2] = df_currComp.loc[(df_currComp['margin'] > 0),['margin']].mean()[0]
-        winMarginSD[p1,p2] = df_currComp.loc[(df_currComp['margin'] > 0),['margin']].std()[0]
-        lossMarginM[p1,p2] = df_currComp.loc[(df_currComp['margin'] < 0),['margin']].mean()[0]
-        lossMarginSD[p1,p2] = df_currComp.loc[(df_currComp['margin'] < 0),['margin']].std()[0]
-        
-        #Plot the current histogram
-        #Note that this distplot function works with seaborn 0.10, but
-        #has been slated for removal in later versions
-        hx = sns.distplot(df_currComp['margin'], kde = False,
-                          bins = int(nBins), color = 'grey',
-                          ax = ax[p1,p2],
-                          hist_kws = {'alpha': 0.75,
-                                      'linewidth': 1.0})
-        
-        #Set colours of each bars depending on bin value
-        #For this one, we'll fill the bars the team wins, and not the bars
-        #the team loses (i.e. fill them white)
-        #Get the unique values of bins in a sorted list
-        sortedBinVals = np.linspace(np.min(df_currComp['margin']),
-                                    np.max(df_currComp['margin']),
-                                    int(nBins))
-        for pp in range(0,len(sortedBinVals)):
-            #Check bin value and plot colour accordingly
-            if sortedBinVals[pp] < 0:
-                hx.patches[pp].set_facecolor(lossCol)
-                hx.patches[pp].set_edgecolor(lossCol)
-            elif sortedBinVals[pp] > 0:
-                hx.patches[pp].set_facecolor(winCol)
-                hx.patches[pp].set_edgecolor(winCol)
-            # elif sortedBinVals[pp] == 0:
-            #     hx.patches[pp].set_edgecolor('k')
-            #Add vertical line if zero
-            elif sortedBinVals[pp] == 0:
-                ax[p1,p2].axvline(0,color = 'k',
-                                  linestyle = '--', linewidth = 0.5)
-        
-        #Set title
-        txt = ax[p1,p2].text(0.5, 1.075,
-                             'Opponent '+str(math.trunc(compProps[p1]*100))+'% / '+
-                             'Team '+str(math.trunc(compProps[p2]*100))+'%',
-                             ha = 'center', fontsize = 9,
-                             transform = ax[p1,p2].transAxes)
-        
-#Identify max y height of bars and set all y-axes to this limit
-maxY = 0 #blank starting value
-for aa in range(0,len(fig.get_axes())):
-    #Loop through patches of current axes and get heights, replace if 
-    #greater than current limit
-    for hh in range(0,len(fig.get_axes()[aa].patches)):
-        #Get current axes y limit and append if greater than current max
-        if fig.get_axes()[aa].patches[hh].get_height() > maxY:
-            maxY = fig.get_axes()[aa].patches[hh].get_height()
-        
-#Reset to nearest 250 ceiling
-maxY = 1000 * math.ceil(maxY/1000)
-for aa in range(0,len(fig.get_axes())):
-    fig.get_axes()[aa].set_ylim([0,maxY])
-    
-#Set min and max X starting values to the min and max margins
-minX = np.min(df_currComp['margin'])
-maxX = np.max(df_currComp['margin'])
-        
-#Reset to nearest 5 floor/ceiling
-minX = 5 * math.floor(minX/5)
-maxX = 5 * math.ceil(maxX/5)
-#Set the x-ticks
-for aa in range(0,len(fig.get_axes())):
-    fig.get_axes()[aa].set_xlim([minX,maxX])
-
-#Set y-axes ticks to 2500 intervals.
-#Set tick and axes labels only on first column
-for ncol in range(0,ax.shape[1]):
-    for nrow in range(0,ax.shape[0]):
-        #Set ticks
-        ax[nrow,ncol].set_yticks(np.linspace(0,maxY,int(maxY/2500+1)))
-        #Set labels and fontsize
-        axLabels = list(np.linspace(0,maxY,int(maxY/2500+1)))
-        axLabels = [math.trunc(value) for value in axLabels]
-        ax[nrow,ncol].set_yticklabels(axLabels, fontsize = 8)
-        #Set y-label if on first column
-        if ncol == 0:
-            ax[nrow,ncol].set_ylabel('Count', fontsize = 9)
-        else:
-            #Remove label
-            ax[nrow,ncol].set_ylabel('')
-            
-#Set x-axes ticks to 5 intervals.
-#Set tick and axes labels only on bottom row
-for ncol in range(0,ax.shape[1]):
-    for nrow in range(0,ax.shape[0]):
-        #Set ticks
-        ax[nrow,ncol].set_xticks(np.linspace(minX,maxX,int(((maxX-minX)/5)+1)))
-        #Set labels and fontsize
-        axLabels = list(np.linspace(minX,maxX,int(((maxX-minX)/5)+1)))
-        axLabels = [math.trunc(value) for value in axLabels]
-        ax[nrow,ncol].set_xticklabels(axLabels, fontsize = 8)
-        #Set y-label if on first column
-        if nrow == ax.shape[0]-1:
-            ax[nrow,ncol].set_xlabel('Margin', fontsize = 9)
-        else:
-            #Remove label
-            ax[nrow,ncol].set_xlabel('')
-            
-#Set tight figure layout
-plt.tight_layout()
-
-#Add win proportion text annotations to each axes
-for nrow in range(0,ax.shape[0]):
-    for ncol in range(0,ax.shape[1]):
-        #Set loss proportion (i.e. opposition wins)
-        ax[nrow,ncol].text(0.05, 0.825,
-                           str(round(lossProps[nrow,ncol]*100,1))+'%\n'+
-                           str(round(lossMarginM[nrow,ncol],1))+' '+u'\u00B1'+' '+str(round(lossMarginSD[nrow,ncol],1)),
-                           ha = 'left', fontsize = 8,
-                           color = lossCol,
-                           transform = ax[nrow,ncol].transAxes)
-        #Set win proportion (i.e. team wins)
-        ax[nrow,ncol].text(0.95, 0.825,
-                           str(round(winProps[nrow,ncol]*100,1))+'%\n'+
-                           str(round(winMarginM[nrow,ncol],1))+' '+u'\u00B1'+' '+str(round(winMarginSD[nrow,ncol],1)),
-                           ha = 'right', fontsize = 8,
-                           color = winCol,
-                           transform = ax[nrow,ncol].transAxes)
-
-##### TODO: save figures 
-
-#Close figure
-plt.close()
-
-# %% Visualise 'competitive' sim margins
+#Visualise 'competitive' sim margins for each team
 
 #This firstly requires the data to be manipulated into a dataframe with specific
 #variables and columns to suit the seaborn package
@@ -1834,24 +1228,15 @@ for tt in range (len(teamList)):
 #Convert to dataframe
 df_compSimMargins = pd.DataFrame.from_dict(marginDict)
 
-#### Test plot
+#Visualise the margins for each team and super shot proportions
+figHelper.marginCompSimVis(df_compSimMargins, compProps, colourDict,
+                           saveDir = '..\\competitiveSims\\figures')
 
-#Split to get example of 0% prop vs. 100% prop opponent
-df_currPlot = df_compSimMargins.loc[(df_compSimMargins['teamSuperProp'] == 0.0) &
-                                    (df_compSimMargins['opponentSuperProp'] == 1.0),]
+# %% TODO: REPORTING
 
-sns.boxplot(x = 'teamName', y = 'margin',
-            hue = 'teamName', palette = list(colourDict.values()),
-            dodge = False, whis = [0,100],
-            data = df_currPlot)
+#Tabulating major findings of study - win percentages across different teams/comparisons
+#Individual teams, but probably tabulate grouped ones too    
 
-##### Edits:
-    ##### Turn off legend, convert to white with coloured outlimne,
-    ##### add dashed line at zero (underneath), box width for separating plots,
-    ##### subplot for 0% vs. others, edit cap width
-        
-# %% TODO:
-    
 # Add some summary statistics (mean, range, IQR's etc.) printed out to table
 # Essentially the box plot data in tabular form
 
