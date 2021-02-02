@@ -40,23 +40,31 @@ knitr::opts_chunk$set(echo = FALSE)
 
 # Introduction
 
-***TODO: Check the below introduction...taken from performance paper...***
+Netball is a court-based team sport played predominantly among Commonwealth nations, and has one of the highest participation rates for team sports in Australia [@AustralianSportsCommission2020]. As in many court-based team sports, the goal of netball is to score more than the opposition. Netball is, however, unique in that goals may only be scored by two players on each team from within the 'shooting circle' (i.e. a half circle around the goal with a 4.9m radius) at their end of the court [@INFrules]. Traditionally, goals scored from within this circle result in one 'goal' or 'point' for the team [@INFrules]. In the 2020 season, Australia's national elite-level league (i.e. Suncorp Super Netball) made the decision to introduce the 'Super Shot' [@NetballAusSuperShotIntro]. The Super Shot period provided teams an opportunity to gain one- versus two-points for successful shots made from the 'inner' (i.e. 0m-3.0m) versus 'outer' (i.e. 3.0m-4.9m), respectively, within the final five minutes of each quarter [@NetballAusSuperShotIntro]. The league has confirmed that the Super Shot rule will continue through the 2021 season [@announcementRef].
 
-Netball is a court-based team sport played predominantly among Commonwealth nations, and has one of the highest participation rates for team sports in Australia [@AustralianSportsCommission2020]. As in many court-based team sports, the goal of netball is to score more than the opposition. Netball is, however, unique in that goals may only be scored by two players on each team from within the 'shooting circle' (i.e. a half circle around the goal with a 4.9m radius) at their end of the court [@INFrules]. Traditionally, goals scored from within this circle result in one 'goal' or 'point' for the team [@INFrules]. In the 2020 season, Australia's national elite-level league (i.e. Suncorp Super Netball) made the decision to introduce the 'Super Shot' [@NetballAusSuperShotIntro]. The Super Shot period provided teams an opportunity to gain one- versus two-points for successful shots made from the 'inner' (i.e. 0m-3.0m) versus 'outer' (i.e. 3.0m-4.9m), respectively, within the final five minutes of each quarter [@NetballAusSuperShotIntro]. 
-
-Altered scoring rules in other sports have provided teams an opportunity to adjust their tactical approach and be a catalyst for a change in game style. Perhaps the best parallel to netball and the introduction of the Super Shot is the introduction of the three-point line to the National Basketball Association (NBA). The NBA has seen a shift in play style towards a greater number of three-point attempts in recent years. When introduced in 1979, teams took 2.8 three-point shots on average — which dramatically contrasts to the 34.1 three-point shots per game in the most recent 2019-20 season [@basketballRefWeb]. This increase appears to have come at the cost of the 'mid-range' shot in the modern game [@basketballRefWeb]. It is possible that the introduction of the Super Shot could see similar tactical shifts in shooting strategies of netball teams. Teams will typically implement attacking strategies that generate shots as close to the goal as possible to maximise accuracy. 'Long-range' shots (i.e. > 3.0m) are mostly avoided [@ourPLOSOneRef] given the greater risk of missing, without any added benefit. The presence of the Super Shot now provides teams with a choice surrounding shooting strategy tactics, whereby they may alter their attacking strategies to generate long-range shots deemed as high-risk in the past due to the added value of an extra point.
-
-The first year of the new Super Shot rule provides an opportunity to examine how the various teams approached Super Shots from a tactical perspective, and the potential impact of this on performance.
-
-The league has confirmed that the Super Shot rule will continue through the upcoming 2021 season [@announcementRef].
-
-***TODO: check introduction as per above note***
-
-
-***TODO: Purpose and aims***
-
+Our analysis prior to the 2020 season [@Fox2020] suggested that the added value of the Super Shot (i.e. two-points) aligned well with the elevated risk of shooting from long range, and that teams may have been able to maximise their scoring by taking a high proportion of Super Shots. These findings were, however, based on shooting statistics from past seasons where the Super Shot rule was not in effect – and further investigation of leagues where a 'two-point rule' was in place (i.e. international Fast5) resulted in a much higher risk of missing long-range shots [@Fox2020]. We hypothesised that the elevated risk of missing long-range shots with a 'two-point rule' in place stems from situational factors, whereby defensive strategies were likely altered to place a heavier emphasis on defending long-range shots [@Fox2020]. Data from the first full season with the Super Shot in place provides an opportunity to re-evaluate the risk-reward value of taking Super Shots with more valid shooting statistics. Further, these data can provide a better foundation for simulating Super Shot periods as a means to identify optimal shooting strategies. In the present study we re-visited the question of whether the weighting of a 2:1 value is appropriate based on the relative risk of missing a shot from the outer versus inner circle during the Super Shot period using data from the 2020 season. Further – we ran a series of simulations of the five-minute Super Shot period, driven by shooting statistics from the 2020 season, in an attempt to identify optimal team-specific shooting strategies for the proportion of Super Shots to take. 
 
 # Methods
+
+## Participants
+
+Participants for this study included all players across the eight teams from the 2020 season of the Australian national netball league (i.e. Suncorp Super Netball). Our study included publicly available, pre-existing data held on the Suncorp Super Netball match centre (***TODO: add link***). An exemption from ethics review (and subsequent waiver of individual consent) was granted by the Deakin University Human Research Ethics Committee (***TODO: add details***).
+
+## Data Collection
+
+We used the {SuperNetballR}***TODO: citation*** package to extract match data from all regular season games during the 2020 Super Netball Season via the Champion Data (official provider of competition statistics) match centre. Within the match centre data – all shots are labelled with identifiers that place them in the inner or outer circle, along with whether they were made or missed. Combined with the timestamp of these events within quarters, we extracted team-specific shooting statistics for: (i) the total number of shots taken; (ii) the number of shots taken from the inner and outer circle; and (iii) the number of made and missed shots from the inner and outer circle from each Super Shot period across the season.
+
+## Data Analysis
+
+Our study required estimating the probability of making versus missing shots from the inner versus outer circle across the different teams. We achieved this by defining a beta distribution in a probability density function for the different circle zones, specified by:
+
+***TODO: add math function***
+
+where *a* and *b* represent the number of missed and made shots within a circle zone, respectively; ***TODO: add x math symbol*** is the probability of *a* relative to *b*; and ***TODO: add gamma*** is the gamma function [@Virtanen2020,@NIST2020]. Probability density functions were created for made versus missed shots in the inner and outer circles for each team to be used in subsequent analyses.
+
+To examine the relative value of the 2:1 point ratio, we replicated the approach from our previous work [@Fox2020] but this time with data from the 2020 season. Specifically, we compared the average relative odds (± 95% confidence intervals [CI]) of missing from the outer versus inner circle during the Super Shot period. This was achieved by dividing randomly sampled values (*n* = 1,000) from the probability density functions of the outer by those from the inner circle at each sample iteration. This analysis was run using shooting statistics from the entire league, as well as individual teams, to give overall and team-specific risk-reward values for attempting Super Shots. Theoretically, the relative odds of missing from the outer to inner circle should match the ratio of points awarded (i.e. 2:1) for the Super Shot to represent 'good value.'
+
+
 
 ...
 
