@@ -1318,3 +1318,235 @@ def marginCompSimVis(df_compSimMargins, compProps, colourDict, saveDir = os.getc
     
     #Close figure
     plt.close()
+    
+# %% Relative odds of missing outer vs. inner circle
+
+def relOddsVis(df_relOdds, df_teamInfo, colourDict, saveDir = os.getcwd()):
+    
+    # Function to plot distributions of competitive sims for two teams
+    #
+    # Input:    df_relOdds - dataframe with relative odds data
+    #           df_teamInfo - dataframe with team info
+    #           colourDict - colour dictionary for team colours on plots
+    #           saveDir - directory to save files in to
+    
+    #Get current directory to navigate back to
+    currDir = os.getcwd()
+    
+    #Navigate to figures directory
+    os.chdir(saveDir)
+    
+    #Settings for how much to subtract/add to x-point for datapoints
+    nSquads = len(df_teamInfo)
+    offset = np.linspace(-nSquads/2,nSquads/2,nSquads+1) / 10
+    
+    #Create figure
+    fig, ax = plt.subplots(figsize=(8,5))
+    
+    #Plot the combined data
+    
+    #Plot all periods data
+    #Get data values
+    dataVals = df_relOdds.loc[(df_relOdds['period'] == 'all'),
+                              ['mean','lower95','upper95']].to_numpy().flatten()
+    #Plot point
+    plt.plot(1+offset[0],dataVals[0],
+             marker = 'o', color = 'k',
+             markersize = 6, label = 'All Teams')
+    #Plot line
+    plt.plot([1+offset[0],1+offset[0]],[dataVals[1],dataVals[2]],
+             color = 'k', linewidth = 2)
+    
+    #Plot standard period data
+    #Get data values
+    dataVals = df_relOdds.loc[(df_relOdds['period'] == 'standard'),
+                              ['mean','lower95','upper95']].to_numpy().flatten()
+    #Plot point
+    plt.plot(3+offset[0],dataVals[0],
+             marker = 's', color = 'k',
+             markersize = 6)
+    #Plot line
+    plt.plot([3+offset[0],3+offset[0]],[dataVals[1],dataVals[2]],
+             color = 'k', linewidth = 2)
+    
+    #Plot super period data
+    #Get data values
+    dataVals = df_relOdds.loc[(df_relOdds['period'] == 'super'),
+                              ['mean','lower95','upper95']].to_numpy().flatten()
+    #Plot point
+    plt.plot(5+offset[0],dataVals[0],
+             marker = 'd', color = 'k',
+             markersize = 6)
+    #Plot line
+    plt.plot([5+offset[0],5+offset[0]],[dataVals[1],dataVals[2]],
+             color = 'k', linewidth = 2)
+    
+    #Loop through teams
+    for tt in range(len(df_teamInfo['squadId'])):
+        
+        #Set current squad name
+        currSquadName = df_teamInfo['squadNickname'][tt]
+        
+        #Plot all periods data
+        #Get data values
+        dataVals = df_relOdds.loc[(df_relOdds['team'] == currSquadName) &
+                                  (df_relOdds['period'] == 'all'),
+                                  ['mean','lower95','upper95']].to_numpy().flatten()
+        #Plot point
+        plt.plot(1+offset[tt+1],dataVals[0],
+                 marker = 'o', color = colourDict[currSquadName],
+                 markersize = 6, label = currSquadName)
+        #Plot line
+        plt.plot([1+offset[tt+1],1+offset[tt+1]],[dataVals[1],dataVals[2]],
+                 color = colourDict[currSquadName], linewidth = 2)
+        
+        #Plot standard period data
+        #Get data values
+        dataVals = df_relOdds.loc[(df_relOdds['team'] == currSquadName) &
+                                  (df_relOdds['period'] == 'standard'),
+                                  ['mean','lower95','upper95']].to_numpy().flatten()
+        #Plot point
+        plt.plot(3+offset[tt+1],dataVals[0],
+                 marker = 's', color = colourDict[currSquadName],
+                 markersize = 6)
+        #Plot line
+        plt.plot([3+offset[tt+1],3+offset[tt+1]],[dataVals[1],dataVals[2]],
+                 color = colourDict[currSquadName], linewidth = 2)
+        
+        #Plot super period data
+        #Get data values
+        dataVals = df_relOdds.loc[(df_relOdds['team'] == currSquadName) &
+                                  (df_relOdds['period'] == 'super'),
+                                  ['mean','lower95','upper95']].to_numpy().flatten()
+        #Plot point
+        plt.plot(5+offset[tt+1],dataVals[0],
+                 marker = 'd', color = colourDict[currSquadName],
+                 markersize = 6)
+        #Plot line
+        plt.plot([5+offset[tt+1],5+offset[tt+1]],[dataVals[1],dataVals[2]],
+                 color = colourDict[currSquadName], linewidth = 2)
+        
+    #Add horizontal line at 2:1 value
+    ax.axhline(y = 1, linestyle = '--', linewidth = 1,
+               color = 'grey', zorder = 0)
+    
+    #Set X-ticks and labels
+    ax.set_xticks([1,3,5])
+    ax.set_xticklabels(['All Match', 'Standard Period', 'Super Shot Period'])
+    
+    #Set Y-axis limits and label
+    ax.set_ylim([0,ax.get_ylim()[1]])
+    ax.set_ylabel('Relative Odds of Missing from Outer vs. Inner Circle')
+    
+    #Set legend
+    plt.legend(ncol = 3)
+    
+    #Tight layout
+    plt.tight_layout()
+    
+    #Save figure
+    plt.savefig('RelativeOdds_OuterInner_AllTeams.pdf')
+    plt.savefig('RelativeOdds_OuterInner_AllTeams.png', format = 'png', dpi = 300)
+    
+    #Return to working directory
+    os.chdir(currDir)
+    
+    #Close figure
+    plt.close()
+    
+# %% Relative odds of missing outer vs. inner circle for defenses
+
+def relOddsDefVis(df_relOddsDef, df_teamInfo, colourDict, saveDir = os.getcwd()):
+    
+    # Function to plot distributions of competitive sims for two teams
+    #
+    # Input:    df_relOddDefs - dataframe with relative odds defensive data
+    #           df_teamInfo - dataframe with team info
+    #           colourDict - colour dictionary for team colours on plots
+    #           saveDir - directory to save files in to
+    
+    #Get current directory to navigate back to
+    currDir = os.getcwd()
+    
+    #Navigate to figures directory
+    os.chdir(saveDir)
+    
+    #Settings for how much to subtract/add to x-point for datapoints
+    nSquads = len(df_teamInfo)
+    offset = np.linspace(-nSquads/2,nSquads/2,nSquads) / 10
+    
+    #Create figure
+    fig, ax = plt.subplots(figsize=(8,5))
+    
+    #Loop through teams
+    for tt in range(len(df_teamInfo['squadId'])):
+        
+        #Set current squad name
+        currSquadName = df_teamInfo['squadNickname'][tt]
+        
+        #Plot all periods data
+        #Get data values
+        dataVals = df_relOddsDef.loc[(df_relOddsDef['team'] == currSquadName) &
+                                     (df_relOddsDef['period'] == 'all'),
+                                     ['mean','lower95','upper95']].to_numpy().flatten()
+        #Plot point
+        plt.plot(1+offset[tt],dataVals[0],
+                 marker = 'o', color = colourDict[currSquadName],
+                 markersize = 6, label = currSquadName)
+        #Plot line
+        plt.plot([1+offset[tt],1+offset[tt]],[dataVals[1],dataVals[2]],
+                 color = colourDict[currSquadName], linewidth = 2)
+        
+        #Plot standard period data
+        #Get data values
+        dataVals = df_relOddsDef.loc[(df_relOddsDef['team'] == currSquadName) &
+                                     (df_relOddsDef['period'] == 'standard'),
+                                     ['mean','lower95','upper95']].to_numpy().flatten()
+        #Plot point
+        plt.plot(3+offset[tt],dataVals[0],
+                 marker = 's', color = colourDict[currSquadName],
+                 markersize = 6)
+        #Plot line
+        plt.plot([3+offset[tt],3+offset[tt]],[dataVals[1],dataVals[2]],
+                 color = colourDict[currSquadName], linewidth = 2)
+        
+        #Plot super period data
+        #Get data values
+        dataVals = df_relOddsDef.loc[(df_relOddsDef['team'] == currSquadName) &
+                                      (df_relOddsDef['period'] == 'super'),
+                                      ['mean','lower95','upper95']].to_numpy().flatten()
+        #Plot point
+        plt.plot(5+offset[tt],dataVals[0],
+                 marker = 'd', color = colourDict[currSquadName],
+                 markersize = 6)
+        #Plot line
+        plt.plot([5+offset[tt],5+offset[tt]],[dataVals[1],dataVals[2]],
+                 color = colourDict[currSquadName], linewidth = 2)
+        
+    #Add horizontal line at 2:1 value
+    ax.axhline(y = 1, linestyle = '--', linewidth = 1,
+               color = 'grey', zorder = 0)
+    
+    #Set X-ticks and labels
+    ax.set_xticks([1,3,5])
+    ax.set_xticklabels(['All Match', 'Standard Period', 'Super Shot Period'])
+    
+    #Set Y-axis limits and label
+    ax.set_ylim([0,ax.get_ylim()[1]])
+    ax.set_ylabel('Relative Odds of Opp. Missing from Outer vs. Inner Circle')
+    
+    #Set legend
+    plt.legend(ncol = 2)
+    
+    #Tight layout
+    plt.tight_layout()
+    
+    #Save figure
+    plt.savefig('RelativeOddsDef_OuterInner_AllTeams.pdf')
+    plt.savefig('RelativeOddsDef_OuterInner_AllTeams.png', format = 'png', dpi = 300)
+    
+    #Return to working directory
+    os.chdir(currDir)
+    
+    #Close figure
+    plt.close()

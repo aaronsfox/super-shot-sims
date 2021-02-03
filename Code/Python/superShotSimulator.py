@@ -107,7 +107,7 @@ df_scoreFlow = dataImport['df_scoreFlow']
 df_lineUp = dataImport['df_lineUp']
 df_individualLineUp = dataImport['df_individualLineUp']
 
-# %% REPEAT ANALYSIS: Relative odds of missing
+# %% Relative odds of missing from inner vs. outer circle
 
 ##### TODO: do this in general, along with across the different attacking teams against
 ##### all other defnsive teams; as well as all teams in general vs. specific defensive 
@@ -125,6 +125,12 @@ df_individualLineUp = dataImport['df_individualLineUp']
 
 #Set the number of trials for random sampling
 nTrials = 100000
+
+#Set dictionary to store values in
+relOddsDict = {'team': [], 'period': [], 'mean': [], 'lower95': [], 'upper95': []}
+relOddsDefDict = {'team': [], 'period': [], 'mean': [], 'lower95': [], 'upper95': []}
+
+# Overall statistics across all teams
 
 #Calculate shot statistics, distributions and random sampling
 
@@ -184,39 +190,39 @@ missedShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'outerCircle')
 betaOuterSuper = stats.beta(missedShots,madeShots)
 valsOuterSuper = np.random.beta(missedShots, madeShots, size = nTrials)
 
-#Visualise the two distributions as probability density functions over the periods
-#Set the subplot figure to plot on
-fig, ax = plt.subplots(figsize=(9, 3), nrows = 1, ncols = 3)
-x = np.linspace(0,1,1000002)[1:-1] #probability values to plot over
-#All match
-ax[0].plot(x, betaInnerAll.pdf(x), ls = '-', c='blue', label = 'Inner Circle')
-ax[0].plot(x, betaOuterAll.pdf(x), ls = '-', c='red', label = 'Outer Circle')
-ax[0].set_title(r'$\beta$'' Distributions for Missed Shots: All Match',
-                fontweight = 'bold', fontsize = 8)
-ax[0].set_xlabel('$x$') #x label
-ax[0].set_ylabel(r'$p(x|\alpha,\beta)$') #y label
-ax[0].legend() #add legend
-ax[0].set_xlim(0.0,0.6) #Adjust x-limit for better viewing
-#Standard period
-ax[1].plot(x, betaInnerStandard.pdf(x), ls = '-', c='blue', label = 'Inner Circle')
-ax[1].plot(x, betaOuterStandard.pdf(x), ls = '-', c='red', label = 'Outer Circle')
-ax[1].set_title(r'$\beta$'' Distributions for Missed Shots: Standard Period',
-                fontweight = 'bold', fontsize = 8)
-ax[1].set_xlabel('$x$') #x label
-ax[1].set_ylabel(r'$p(x|\alpha,\beta)$') #y label
-ax[1].legend() #add legend
-ax[1].set_xlim(0.0,0.6) #Adjust x-limit for better viewing
-#Super period
-ax[2].plot(x, betaInnerSuper.pdf(x), ls = '-', c='blue', label = 'Inner Circle')
-ax[2].plot(x, betaOuterSuper.pdf(x), ls = '-', c='red', label = 'Outer Circle')
-ax[2].set_title(r'$\beta$'' Distributions for Missed Shots: Power 5 Period',
-                fontweight = 'bold', fontsize = 8)
-ax[2].set_xlabel('$x$') #x label
-ax[2].set_ylabel(r'$p(x|\alpha,\beta)$') #y label
-ax[2].legend() #add legend
-ax[2].set_xlim(0.0,0.6) #Adjust x-limit for better viewing
-#Tight plot layout
-plt.tight_layout()
+# #Visualise the two distributions as probability density functions over the periods
+# #Set the subplot figure to plot on
+# fig, ax = plt.subplots(figsize=(9, 3), nrows = 1, ncols = 3)
+# x = np.linspace(0,1,1000002)[1:-1] #probability values to plot over
+# #All match
+# ax[0].plot(x, betaInnerAll.pdf(x), ls = '-', c='blue', label = 'Inner Circle')
+# ax[0].plot(x, betaOuterAll.pdf(x), ls = '-', c='red', label = 'Outer Circle')
+# ax[0].set_title(r'$\beta$'' Distributions for Missed Shots: All Match',
+#                 fontweight = 'bold', fontsize = 8)
+# ax[0].set_xlabel('$x$') #x label
+# ax[0].set_ylabel(r'$p(x|\alpha,\beta)$') #y label
+# ax[0].legend() #add legend
+# ax[0].set_xlim(0.0,0.6) #Adjust x-limit for better viewing
+# #Standard period
+# ax[1].plot(x, betaInnerStandard.pdf(x), ls = '-', c='blue', label = 'Inner Circle')
+# ax[1].plot(x, betaOuterStandard.pdf(x), ls = '-', c='red', label = 'Outer Circle')
+# ax[1].set_title(r'$\beta$'' Distributions for Missed Shots: Standard Period',
+#                 fontweight = 'bold', fontsize = 8)
+# ax[1].set_xlabel('$x$') #x label
+# ax[1].set_ylabel(r'$p(x|\alpha,\beta)$') #y label
+# ax[1].legend() #add legend
+# ax[1].set_xlim(0.0,0.6) #Adjust x-limit for better viewing
+# #Super period
+# ax[2].plot(x, betaInnerSuper.pdf(x), ls = '-', c='blue', label = 'Inner Circle')
+# ax[2].plot(x, betaOuterSuper.pdf(x), ls = '-', c='red', label = 'Outer Circle')
+# ax[2].set_title(r'$\beta$'' Distributions for Missed Shots: Power 5 Period',
+#                 fontweight = 'bold', fontsize = 8)
+# ax[2].set_xlabel('$x$') #x label
+# ax[2].set_ylabel(r'$p(x|\alpha,\beta)$') #y label
+# ax[2].legend() #add legend
+# ax[2].set_xlim(0.0,0.6) #Adjust x-limit for better viewing
+# #Tight plot layout
+# plt.tight_layout()
 
 #Determine how much relatively higher odds of missing from outer circle are to
 #the inner circle
@@ -224,18 +230,18 @@ sampleRatiosAll = valsOuterAll/valsInnerAll
 sampleRatiosStandard = valsOuterStandard/valsInnerStandard
 sampleRatiosSuper = valsOuterSuper/valsInnerSuper
 
-#Visualise the relative sample ratios on a histogram
-fig, ax = plt.subplots(figsize=(9, 3), nrows = 1, ncols = 3)
-ax[0].hist(sampleRatiosAll, bins = 'auto')
-ax[0].set_title('Ratios for Missed Shots in Outer vs. Inner Circle: All Match',
-                fontweight = 'bold', fontsize = 6)
-ax[1].hist(sampleRatiosStandard, bins = 'auto')
-ax[1].set_title('Ratios for Missed Shots in Outer vs. Inner Circle: Standard Period',
-                fontweight = 'bold', fontsize = 6)
-ax[2].hist(sampleRatiosSuper, bins = 'auto')
-ax[2].set_title('Ratios for Missed Shots in Outer vs. Inner Circle: Power 5 Period',
-                fontweight = 'bold', fontsize = 6)
-plt.tight_layout()
+# #Visualise the relative sample ratios on a histogram
+# fig, ax = plt.subplots(figsize=(9, 3), nrows = 1, ncols = 3)
+# ax[0].hist(sampleRatiosAll, bins = 'auto')
+# ax[0].set_title('Ratios for Missed Shots in Outer vs. Inner Circle: All Match',
+#                 fontweight = 'bold', fontsize = 6)
+# ax[1].hist(sampleRatiosStandard, bins = 'auto')
+# ax[1].set_title('Ratios for Missed Shots in Outer vs. Inner Circle: Standard Period',
+#                 fontweight = 'bold', fontsize = 6)
+# ax[2].hist(sampleRatiosSuper, bins = 'auto')
+# ax[2].set_title('Ratios for Missed Shots in Outer vs. Inner Circle: Power 5 Period',
+#                 fontweight = 'bold', fontsize = 6)
+# plt.tight_layout()
 
 #Create values for empirical cumulative distribution function
 cdfSplitAll_x = np.sort(sampleRatiosAll)
@@ -255,10 +261,320 @@ ci95_upperStandard = cdfSplitStandard_x[upper95ind]
 ci95_lowerSuper = cdfSplitSuper_x[lower95ind]
 ci95_upperSuper = cdfSplitSuper_x[upper95ind]
 
+#Store values
+#All match
+relOddsDict['team'].append('all')
+relOddsDict['period'].append('all')
+relOddsDict['mean'].append(sampleRatiosAll.mean())
+relOddsDict['lower95'].append(ci95_lowerAll)
+relOddsDict['upper95'].append(ci95_upperAll)
+#Standard period
+relOddsDict['team'].append('all')
+relOddsDict['period'].append('standard')
+relOddsDict['mean'].append(sampleRatiosStandard.mean())
+relOddsDict['lower95'].append(ci95_lowerStandard)
+relOddsDict['upper95'].append(ci95_upperStandard)
+#Super period
+relOddsDict['team'].append('all')
+relOddsDict['period'].append('super')
+relOddsDict['mean'].append(sampleRatiosSuper.mean())
+relOddsDict['lower95'].append(ci95_lowerSuper)
+relOddsDict['upper95'].append(ci95_upperSuper)
+
 #Create a string that puts these values together and prints
 print('Relative odds [95% CIs] of missing from outer to inner circle all match: '+str(round(sampleRatiosAll.mean(),2)) + ' [' + str(round(ci95_lowerAll,2)) + ',' + str(round(ci95_upperAll,2)) + ']')
 print('Relative odds [95% CIs] of missing from outer to inner circle in standard periods: '+str(round(sampleRatiosStandard.mean(),2)) + ' [' + str(round(ci95_lowerStandard,2)) + ',' + str(round(ci95_upperStandard,2)) + ']')
 print('Relative odds [95% CIs] of missing from outer to inner circle Power 5 periods: '+str(round(sampleRatiosSuper.mean(),2)) + ' [' + str(round(ci95_lowerSuper,2)) + ',' + str(round(ci95_upperSuper,2)) + ']')
+
+#Repeat for each team
+for tt in range(len(df_teamInfo['squadId'])):
+    
+    #Set current squad ID and name
+    currSquadId = df_teamInfo['squadId'][tt]
+    currSquadName = df_teamInfo['squadNickname'][tt]
+    
+    #Calculate shot statistics, distributions and random sampling
+    
+    #Inner circle - all match
+    madeShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'innerCircle') &
+                                     (df_scoreFlow['squadId'] == currSquadId) &
+                                     (df_scoreFlow['shotOutcome'] == True),'shotCircle'])
+    missedShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'innerCircle') &
+                                       (df_scoreFlow['squadId'] == currSquadId) &
+                                       (df_scoreFlow['shotOutcome'] == False),'shotCircle'])
+    betaInnerAll = stats.beta(missedShots,madeShots)
+    valsInnerAll = np.random.beta(missedShots, madeShots, size = nTrials)
+    
+    #Outer circle - all match
+    madeShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'outerCircle') &
+                                     (df_scoreFlow['squadId'] == currSquadId) &
+                                     (df_scoreFlow['shotOutcome'] == True),'shotCircle'])
+    missedShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'outerCircle') &
+                                       (df_scoreFlow['squadId'] == currSquadId) &
+                                       (df_scoreFlow['shotOutcome'] == False),'shotCircle'])
+    betaOuterAll = stats.beta(missedShots,madeShots)
+    valsOuterAll = np.random.beta(missedShots, madeShots, size = nTrials)
+    
+    #Inner circle - standard period
+    madeShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'innerCircle') &
+                                     (df_scoreFlow['squadId'] == currSquadId) &
+                                     (df_scoreFlow['shotOutcome'] == True) &
+                                     (df_scoreFlow['periodCategory'] == 'standard'),'shotCircle'])
+    missedShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'innerCircle') &
+                                       (df_scoreFlow['squadId'] == currSquadId) &
+                                       (df_scoreFlow['shotOutcome'] == False) &
+                                       (df_scoreFlow['periodCategory'] == 'standard'),'shotCircle'])
+    betaInnerStandard = stats.beta(missedShots,madeShots)
+    valsInnerStandard = np.random.beta(missedShots, madeShots, size = nTrials)
+    
+    #Outer circle - standard period
+    madeShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'outerCircle') &
+                                     (df_scoreFlow['squadId'] == currSquadId) &
+                                     (df_scoreFlow['shotOutcome'] == True) &
+                                     (df_scoreFlow['periodCategory'] == 'standard'),'shotCircle'])
+    missedShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'outerCircle') &
+                                       (df_scoreFlow['squadId'] == currSquadId) &
+                                       (df_scoreFlow['shotOutcome'] == False) &
+                                       (df_scoreFlow['periodCategory'] == 'standard'),'shotCircle'])
+    betaOuterStandard = stats.beta(missedShots,madeShots)
+    valsOuterStandard = np.random.beta(missedShots, madeShots, size = nTrials)
+    
+    #Inner circle - super period
+    madeShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'innerCircle') &
+                                     (df_scoreFlow['squadId'] == currSquadId) &
+                                     (df_scoreFlow['shotOutcome'] == True) &
+                                     (df_scoreFlow['periodCategory'] == 'twoPoint'),'shotCircle'])
+    missedShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'innerCircle') &
+                                       (df_scoreFlow['squadId'] == currSquadId) &
+                                       (df_scoreFlow['shotOutcome'] == False) &
+                                       (df_scoreFlow['periodCategory'] == 'twoPoint'),'shotCircle'])
+    betaInnerSuper = stats.beta(missedShots,madeShots)
+    valsInnerSuper = np.random.beta(missedShots, madeShots, size = nTrials)
+    
+    #Outer circle - super period
+    madeShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'outerCircle') &
+                                     (df_scoreFlow['squadId'] == currSquadId) &
+                                     (df_scoreFlow['shotOutcome'] == True) &
+                                     (df_scoreFlow['periodCategory'] == 'twoPoint'),'shotCircle'])
+    missedShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'outerCircle') &
+                                       (df_scoreFlow['squadId'] == currSquadId) &
+                                       (df_scoreFlow['shotOutcome'] == False) &
+                                       (df_scoreFlow['periodCategory'] == 'twoPoint'),'shotCircle'])
+    betaOuterSuper = stats.beta(missedShots,madeShots)
+    valsOuterSuper = np.random.beta(missedShots, madeShots, size = nTrials)
+    
+    #Determine how much relatively higher odds of missing from outer circle are to
+    #the inner circle
+    sampleRatiosAll = valsOuterAll/valsInnerAll
+    sampleRatiosStandard = valsOuterStandard/valsInnerStandard
+    sampleRatiosSuper = valsOuterSuper/valsInnerSuper
+    
+    #Create values for empirical cumulative distribution function
+    cdfSplitAll_x = np.sort(sampleRatiosAll)
+    cdfSplitStandard_x = np.sort(sampleRatiosStandard)
+    cdfSplitSuper_x = np.sort(sampleRatiosSuper)
+    cdfSplit_y = np.arange(1, nTrials+1) / nTrials
+    
+    #Calculate confidence intervals of the cumulative distribution function
+    #Find where the CDF y-values equal 0.05/0.95, or the closest index to this,
+    #and grab that index of the x-values
+    lower95ind = np.where(cdfSplit_y == 0.05)[0][0]
+    upper95ind = np.where(cdfSplit_y == 0.95)[0][0]
+    ci95_lowerAll = cdfSplitAll_x[lower95ind]
+    ci95_upperAll = cdfSplitAll_x[upper95ind]
+    ci95_lowerStandard = cdfSplitStandard_x[lower95ind]
+    ci95_upperStandard = cdfSplitStandard_x[upper95ind]
+    ci95_lowerSuper = cdfSplitSuper_x[lower95ind]
+    ci95_upperSuper = cdfSplitSuper_x[upper95ind]
+    
+    #Store values
+    #All match
+    relOddsDict['team'].append(currSquadName)
+    relOddsDict['period'].append('all')
+    relOddsDict['mean'].append(sampleRatiosAll.mean())
+    relOddsDict['lower95'].append(ci95_lowerAll)
+    relOddsDict['upper95'].append(ci95_upperAll)
+    #Standard period
+    relOddsDict['team'].append(currSquadName)
+    relOddsDict['period'].append('standard')
+    relOddsDict['mean'].append(sampleRatiosStandard.mean())
+    relOddsDict['lower95'].append(ci95_lowerStandard)
+    relOddsDict['upper95'].append(ci95_upperStandard)
+    #Super period
+    relOddsDict['team'].append(currSquadName)
+    relOddsDict['period'].append('super')
+    relOddsDict['mean'].append(sampleRatiosSuper.mean())
+    relOddsDict['lower95'].append(ci95_lowerSuper)
+    relOddsDict['upper95'].append(ci95_upperSuper)
+    
+    #Create a string that puts these values together and prints
+    print('Relative odds [95% CIs] of '+currSquadName+' missing from outer to inner circle all match: '+str(round(sampleRatiosAll.mean(),2)) + ' [' + str(round(ci95_lowerAll,2)) + ',' + str(round(ci95_upperAll,2)) + ']')
+    print('Relative odds [95% CIs] of '+currSquadName+' missing from outer to inner circle in standard periods: '+str(round(sampleRatiosStandard.mean(),2)) + ' [' + str(round(ci95_lowerStandard,2)) + ',' + str(round(ci95_upperStandard,2)) + ']')
+    print('Relative odds [95% CIs] of '+currSquadName+' missing from outer to inner circle Power 5 periods: '+str(round(sampleRatiosSuper.mean(),2)) + ' [' + str(round(ci95_lowerSuper,2)) + ',' + str(round(ci95_upperSuper,2)) + ']')
+
+#Convert to dataframe
+df_relOdds = pd.DataFrame.from_dict(relOddsDict)
+
+#Visualise and save relative odds data
+figHelper.relOddsVis(df_relOdds, df_teamInfo, colourDict,
+                     saveDir = '..\\..\\Results\\relativeOdds\\figures')
+
+##### TODO: export tabulated...?
+
+#We repeat a similar analysis here, but instead of the shots being taken we
+#look at shots being taken against a team
+
+#This first requires us to look through the match info and add an opposition id
+#to the score flow data
+oppId = []
+for ss in range(len(df_scoreFlow)):
+    #Grab the relevant row data
+    currMatch = df_scoreFlow['matchNo'][ss]
+    currRound = df_scoreFlow['roundNo'][ss]
+    currSquadId = df_scoreFlow['squadId'][ss]
+    #Match this up to the match info data and figure out which squad to add
+    #to the opposition id list
+    currSquads = df_matchInfo.loc[(df_matchInfo['roundNo'] == currRound) &
+                                  (df_matchInfo['matchNo'] == currMatch),
+                                  ['homeSquadId','awaySquadId']].values.flatten()
+    oppId.append(currSquads[np.where(currSquads != currSquadId)[0][0]])
+#Append the new list to the dataframe
+df_scoreFlow['oppId'] = oppId
+
+#Loop through teams and extract their defensive shot statistics
+for tt in range(len(df_teamInfo['squadId'])):
+    
+    #Set current squad ID and name
+    currSquadId = df_teamInfo['squadId'][tt]
+    currSquadName = df_teamInfo['squadNickname'][tt]
+    
+    #Calculate shot statistics, distributions and random sampling
+    
+    #Inner circle - all match
+    madeShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'innerCircle') &
+                                     (df_scoreFlow['oppId'] == currSquadId) &
+                                     (df_scoreFlow['shotOutcome'] == True),'shotCircle'])
+    missedShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'innerCircle') &
+                                       (df_scoreFlow['oppId'] == currSquadId) &
+                                       (df_scoreFlow['shotOutcome'] == False),'shotCircle'])
+    betaInnerAll = stats.beta(missedShots,madeShots)
+    valsInnerAll = np.random.beta(missedShots, madeShots, size = nTrials)
+    
+    #Outer circle - all match
+    madeShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'outerCircle') &
+                                     (df_scoreFlow['oppId'] == currSquadId) &
+                                     (df_scoreFlow['shotOutcome'] == True),'shotCircle'])
+    missedShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'outerCircle') &
+                                       (df_scoreFlow['oppId'] == currSquadId) &
+                                       (df_scoreFlow['shotOutcome'] == False),'shotCircle'])
+    betaOuterAll = stats.beta(missedShots,madeShots)
+    valsOuterAll = np.random.beta(missedShots, madeShots, size = nTrials)
+    
+    #Inner circle - standard period
+    madeShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'innerCircle') &
+                                     (df_scoreFlow['oppId'] == currSquadId) &
+                                     (df_scoreFlow['shotOutcome'] == True) &
+                                     (df_scoreFlow['periodCategory'] == 'standard'),'shotCircle'])
+    missedShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'innerCircle') &
+                                       (df_scoreFlow['oppId'] == currSquadId) &
+                                       (df_scoreFlow['shotOutcome'] == False) &
+                                       (df_scoreFlow['periodCategory'] == 'standard'),'shotCircle'])
+    betaInnerStandard = stats.beta(missedShots,madeShots)
+    valsInnerStandard = np.random.beta(missedShots, madeShots, size = nTrials)
+    
+    #Outer circle - standard period
+    madeShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'outerCircle') &
+                                     (df_scoreFlow['oppId'] == currSquadId) &
+                                     (df_scoreFlow['shotOutcome'] == True) &
+                                     (df_scoreFlow['periodCategory'] == 'standard'),'shotCircle'])
+    missedShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'outerCircle') &
+                                       (df_scoreFlow['oppId'] == currSquadId) &
+                                       (df_scoreFlow['shotOutcome'] == False) &
+                                       (df_scoreFlow['periodCategory'] == 'standard'),'shotCircle'])
+    betaOuterStandard = stats.beta(missedShots,madeShots)
+    valsOuterStandard = np.random.beta(missedShots, madeShots, size = nTrials)
+    
+    #Inner circle - super period
+    madeShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'innerCircle') &
+                                     (df_scoreFlow['oppId'] == currSquadId) &
+                                     (df_scoreFlow['shotOutcome'] == True) &
+                                     (df_scoreFlow['periodCategory'] == 'twoPoint'),'shotCircle'])
+    missedShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'innerCircle') &
+                                       (df_scoreFlow['oppId'] == currSquadId) &
+                                       (df_scoreFlow['shotOutcome'] == False) &
+                                       (df_scoreFlow['periodCategory'] == 'twoPoint'),'shotCircle'])
+    betaInnerSuper = stats.beta(missedShots,madeShots)
+    valsInnerSuper = np.random.beta(missedShots, madeShots, size = nTrials)
+    
+    #Outer circle - super period
+    madeShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'outerCircle') &
+                                     (df_scoreFlow['oppId'] == currSquadId) &
+                                     (df_scoreFlow['shotOutcome'] == True) &
+                                     (df_scoreFlow['periodCategory'] == 'twoPoint'),'shotCircle'])
+    missedShots = len(df_scoreFlow.loc[(df_scoreFlow['shotCircle'] == 'outerCircle') &
+                                       (df_scoreFlow['oppId'] == currSquadId) &
+                                       (df_scoreFlow['shotOutcome'] == False) &
+                                       (df_scoreFlow['periodCategory'] == 'twoPoint'),'shotCircle'])
+    betaOuterSuper = stats.beta(missedShots,madeShots)
+    valsOuterSuper = np.random.beta(missedShots, madeShots, size = nTrials)
+    
+    #Determine how much relatively higher odds of missing from outer circle are to
+    #the inner circle
+    sampleRatiosAll = valsOuterAll/valsInnerAll
+    sampleRatiosStandard = valsOuterStandard/valsInnerStandard
+    sampleRatiosSuper = valsOuterSuper/valsInnerSuper
+    
+    #Create values for empirical cumulative distribution function
+    cdfSplitAll_x = np.sort(sampleRatiosAll)
+    cdfSplitStandard_x = np.sort(sampleRatiosStandard)
+    cdfSplitSuper_x = np.sort(sampleRatiosSuper)
+    cdfSplit_y = np.arange(1, nTrials+1) / nTrials
+    
+    #Calculate confidence intervals of the cumulative distribution function
+    #Find where the CDF y-values equal 0.05/0.95, or the closest index to this,
+    #and grab that index of the x-values
+    lower95ind = np.where(cdfSplit_y == 0.05)[0][0]
+    upper95ind = np.where(cdfSplit_y == 0.95)[0][0]
+    ci95_lowerAll = cdfSplitAll_x[lower95ind]
+    ci95_upperAll = cdfSplitAll_x[upper95ind]
+    ci95_lowerStandard = cdfSplitStandard_x[lower95ind]
+    ci95_upperStandard = cdfSplitStandard_x[upper95ind]
+    ci95_lowerSuper = cdfSplitSuper_x[lower95ind]
+    ci95_upperSuper = cdfSplitSuper_x[upper95ind]
+    
+    #Store values
+    #All match
+    relOddsDefDict['team'].append(currSquadName)
+    relOddsDefDict['period'].append('all')
+    relOddsDefDict['mean'].append(sampleRatiosAll.mean())
+    relOddsDefDict['lower95'].append(ci95_lowerAll)
+    relOddsDefDict['upper95'].append(ci95_upperAll)
+    #Standard period
+    relOddsDefDict['team'].append(currSquadName)
+    relOddsDefDict['period'].append('standard')
+    relOddsDefDict['mean'].append(sampleRatiosStandard.mean())
+    relOddsDefDict['lower95'].append(ci95_lowerStandard)
+    relOddsDefDict['upper95'].append(ci95_upperStandard)
+    #Super period
+    relOddsDefDict['team'].append(currSquadName)
+    relOddsDefDict['period'].append('super')
+    relOddsDefDict['mean'].append(sampleRatiosSuper.mean())
+    relOddsDefDict['lower95'].append(ci95_lowerSuper)
+    relOddsDefDict['upper95'].append(ci95_upperSuper)
+    
+    #Create a string that puts these values together and prints
+    print('Relative odds [95% CIs] of '+currSquadName+' opponents missing from outer to inner circle all match: '+str(round(sampleRatiosAll.mean(),2)) + ' [' + str(round(ci95_lowerAll,2)) + ',' + str(round(ci95_upperAll,2)) + ']')
+    print('Relative odds [95% CIs] of '+currSquadName+' opponents missing from outer to inner circle in standard periods: '+str(round(sampleRatiosStandard.mean(),2)) + ' [' + str(round(ci95_lowerStandard,2)) + ',' + str(round(ci95_upperStandard,2)) + ']')
+    print('Relative odds [95% CIs] of '+currSquadName+' opponents missing from outer to inner circle Power 5 periods: '+str(round(sampleRatiosSuper.mean(),2)) + ' [' + str(round(ci95_lowerSuper,2)) + ',' + str(round(ci95_upperSuper,2)) + ']')
+
+#Convert to dataframe
+df_relOddsDef = pd.DataFrame.from_dict(relOddsDefDict)
+
+#Visualise and save relative odds data
+figHelper.relOddsDefVis(df_relOddsDef, df_teamInfo, colourDict,
+                        saveDir = '..\\..\\Results\\relativeOdds\\figures')
+
+##### TODO: export tabulated...?
 
 # %% REPEAT ANALYSIS: Tactics (i.e. shot proportions) & scoring with new rules
 
