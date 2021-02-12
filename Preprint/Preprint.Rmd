@@ -9,8 +9,8 @@ author:
   - name: Lyndell Bruce
     affiliation: Centre for Sport Research
 address:
-  - code: Centre for Sports Research
-    address: Centre for Sports Research, School of Exercise and Nutrition Sciences, Deakin University, Geelong, Australia
+  - code: Centre for Sport Research
+    address: Centre for Sport Research, School of Exercise and Nutrition Sciences, Deakin University, Geelong, Australia
 footnote:
   - code: 1
     text: "Corresponding Author: aaron.f@deakin.edu.au"
@@ -35,6 +35,11 @@ knitr::opts_chunk$set(echo = FALSE)
 #   rmarkdown::render(inputFile, encoding = encoding,
 #   output_format = "all") })
 
+#Import libraries
+library(kableExtra)
+
+#Include graphics requires full path, so set that to a variable here
+workDir = getwd()
 
 ```
 
@@ -64,6 +69,8 @@ where *a* and *b* represent the number of missed and made shots within a circle 
 
 To examine the relative value of the 2:1 point ratio, we replicated the approach from our previous work [@Fox2020] but this time with data from the 2020 season. Specifically, we compared the average relative odds (± 95% confidence intervals [CI]) of missing from the outer versus inner circle during the Super Shot period. This was achieved by dividing randomly sampled values (*n* = 1,000) from the probability density functions of the outer by those from the inner circle at each sample iteration. This analysis was run using shooting statistics from the entire league, as well as individual teams, to give overall and team-specific risk-reward values for attempting Super Shots. Theoretically, the relative odds of missing from the outer to inner circle should match the ratio of points awarded (i.e. 2:1) for the Super Shot to represent 'good value.'
 
+***TODO: add defensive calculations too...***
+
 
 
 ...
@@ -79,7 +86,76 @@ Our approach in the present paper to simulate Super Shot scoring periods differs
 
 # Results
 
+```{r importResults, echo = FALSE}
+
+#Import processed .csv tables for tabulating and look-up of results
+
+#Load in relative odds dataframes
+df_relOdds = read.csv(file = 'Results/relativeOdds/tables/RelativeOdds_OuterInner_AllTeams.csv')
+df_relOddsDef = read.csv(file = 'Results/relativeOdds/tables/RelativeOddsDef_OuterInner_AllTeams.csv')
+
+#Load in margin and confidence interval dataframe
+df_marginTable = read.csv(file = 'Results/competitiveSims/tables/compSimMargins_summary.csv')
+
+
+```
+
+```{r extractResults, echo = FALSE}
+
+#Extract certain values from dataframes for ease of use in text
+
+#Mean and 95% CIs for all teams relative odds for missing from outer vs. inner
+#Entire match
+relOdds_all_all_m = df_relOdds[df_relOdds$team == "all" & df_relOdds$period == "all",]$mean
+relOdds_all_all_l95 = df_relOdds[df_relOdds$team == "all" & df_relOdds$period == "all",]$lower95
+relOdds_all_all_u95 = df_relOdds[df_relOdds$team == "all" & df_relOdds$period == "all",]$upper95
+#Standard periods
+relOdds_all_standard_m = df_relOdds[df_relOdds$team == "all" & df_relOdds$period == "standard",]$mean
+relOdds_all_standard_l95 = df_relOdds[df_relOdds$team == "all" & df_relOdds$period == "standard",]$lower95
+relOdds_all_standard_u95 = df_relOdds[df_relOdds$team == "all" & df_relOdds$period == "standard",]$upper95
+#Super periods
+relOdds_all_super_m = df_relOdds[df_relOdds$team == "all" & df_relOdds$period == "super",]$mean
+relOdds_all_super_l95 = df_relOdds[df_relOdds$team == "all" & df_relOdds$period == "super",]$lower95
+relOdds_all_super_u95 = df_relOdds[df_relOdds$team == "all" & df_relOdds$period == "super",]$upper95
+
+
+```
+
+The relative combined odds (± 95% CIs) from all teams of missing from the outer versus the inner circle across the entire match were `r round(relOdds_all_all_m,2)` [`r round(relOdds_all_all_l95,2)`, `r round(relOdds_all_all_u95,2)`], and `r round(relOdds_all_standard_m,2)` [`r round(relOdds_all_standard_l95,2)`, `r round(relOdds_all_standard_u95,2)`] versus `r round(relOdds_all_super_m,2)` [`r round(relOdds_all_super_l95,2)`, `r round(relOdds_all_super_u95,2)`] in the standard and Super Shot periods, respectively. The relative odds of missing from the outer versus inner circle across the individual teams were relatively similar, with the exception of the Fever having higher odds than the majority of teams across all match periods (see Figure \ref{fig:relativeOddsFig}). The relative odds (± 95% CIs) of missing from the outer versus inner circle during the Super Shot Period were greater than 2:1 across all teams (see Figure \ref{fig:relativeOddsFig}). No team was more effective in elevating the risk of missing from the outer versus inner circle, with mostly similar odds observed across all teams opponents in the various periods of the quarter (see Figure \ref{fig:relativeOddsDefFig}).
+
+```{r relativeOddsFig, fig.cap = "A caption", out.width = '50%'}
+
+##### TODO: sort out caption and size etc.
+
+#Create figure from image
+knitr::include_graphics(paste(workDir,"/Results/relativeOdds/figures/RelativeOdds_OuterInner_AllTeams.pdf", sep = ""))
+
+```
+
+```{r relativeOddsDefFig, fig.cap = "A caption", out.width = '50%'}
+
+##### TODO: sort out caption and size etc.
+
+#Create figure from image
+knitr::include_graphics(paste(workDir,"/Results/relativeOdds/figures/RelativeOddsDef_OuterInner_AllTeams.pdf", sep = ""))
+
+```
+
 ...
+
+
+
+
+```{r marginTable, echo = FALSE}
+
+##### TODO: pretty up table!
+
+#Print table of margin and confidence intervals
+kbl(df_marginTable, booktabs = T, caption = "Table X: TODO Add caption") %>%
+  kable_styling(latex_options = c("striped", "scale_down")) %>%
+  landscape()
+
+```
 
 
 
@@ -94,6 +170,23 @@ Discussion points...
 - Team specific values, any obvious differences? For example, one team may have had better success and therefore using a higher proportion in general may have led to higher percentage of 'won' periods
 - Team vs. team specific values and if they are different across various opponents. For example, better shooting success with high super shot proportions vs. one team but not another? This may be more relevant if we use opponent specific probabilities of super shot success. Important that the lack of 'defensive' presence within simulations is acknowledged as a limitation, in that we applied the same super shot probability rates for each team from their entire season, rather than individually vs. their oposition team. Given we might have some relative risk of missing against different defensive opponents, this may actually reveal that this should be a consideration if one team is more effective with their defense
 - Practical considerations of work include strategising around super shot, with respect to how many to take perhaps depending on margin along with opposition, as well as own teams success in this realm
+
+
+Discussion notes...check paragraphs here
+
+The relative odds of missing from the outer versus inner circle suggests that, on average, the value of the Super shot was outweighed by the elevated risk of missing. We found that in all but one instance, the risk of missing from the outer circle was greater than 2 times that of the inner circle. The only case where the 95% CIs overlapped 2 was for the Firebirds during the standard period. This specific case is, however, somewhat irrelevant as the additional points were not available during this time. The mean relative odds across the dataset for our versus inner circle ranged from X to X. These values are much higher than our original analysis from a previous season, however align with the fast 5 data which also included additional points for long range shots. Together, these findings suggest that the presence of additional points is in some way making these shots more difficult. It is still difficult to infer what is causing this, with altered defensive strategies and added psychological pressure remaining as valid potential reasons. The risk of missing from the outer versus inner circle was also elevated in standard scoring times compared to previous seasons. This potentially suggests opposition teams may have adopted a general or overall shift in defending long range shots, even when the additional points were not available. Further analysis of gameplay or investigation of coach/player strategy and perceptions is likely necessary to confirm the factors contributing.
+
+General approach and considerations around this. There are likely still situations where the Super shot holds appropriate value. Despite the average relative risk outweighing the additional point value in offer, there may be situations where teams identify this as an appropriate risk. For example, when trailing by a large margin with minimal time remaining, the 1 point on offer for a standard shot may have very little value to the trailing team. In this instance the Super shot becomes the only option for a team to remain competitive. Our analysis also considered overall team shooting statistics. The relative risk may change for an individual specialist long range shooter, hence having the ball in their hands in Super shot range may actually present a relatively valuable opportunity. Hot hand too...
+
+Defensive relative risk data.... The opposition also appears to be a factor in the relative value of the Super shot. X teams appeared to defend the shot better by defending this better than the inner circle, particularly in the Super shot period. This further indicates an emphasis on certain teams defensive strategy for the Super shot, which could have made the long range harder, or by virtue of defending long range positions making it easier for teams to get easier shots closer to the post. Conversely, certain teams oppositions reduced their risk of outer vs. inner miss during the super shot period – perhaps suggesting that their defensive strategies were not as effective as their oppositions strategy in generating ‘good’ shots during the super shot period. Despite the mean differences, the confidence intervals typically overlapped. Again, these inferences can only be confirmed with more detailed analysis of team strategy.
+
+Our simulation data does, however, demonstrate potential value in using the Super shot for certain teams and in certain scenarios. Times where higher proportion of super shot was valuable? We incorporated variable shot opportunity numbers based on league data, and hence the number of shot opportunities varied across individual simulations for teams. This was balanced, in that when teams received more shot opportunities, their opposition received fewer. Across all simulations, the wining team received more shots on x% of times. This factor became more/less evident across scenarios where a team took a higher proportion of super shots, whereby the winning team had more shots in x% of these simulations. This firstly suggests that generating more shot opportunities than your opponent is obviously beneficial, but potentially awards you more flexibility when considering taking a greater proportion of super shots. 
+
+Similarly, teams who were better with the Super shot fared better in simulations with greater proportions of super shots, and vice versa for teams that are worse. For example, the fever lost x% of simulations when they went heavy on the Super shot, vs. X team who won x% of simulations when using a high % proportion of super shots. This is not surprising as the fever had the highest risk of missing from the outer vs inner circle, particularly during Super shot periods. These findings likely demonstrate a need for teams to play to their shooting strengths. 
+
+Looking at the margin summaries (mean +/- 95% CI's) from each teams competitive simulations across all opponents, certain strategies appeared more or less favourable across different teams. For example, where the Fever extended above 50% of their shots as Super Shots, it was typical for them to score less than their opponent in the Super Shot period; whereas when they used no Super Shots they typically outscored their opponents. Other trends...?
+
+Nonetheless, the simulated margins within the Super Shot period, irrrespective of the strategies used, were typically low - rarely exceeding 1.5 to 2 points in a typical simulation. At most we suggest that optimising the Super Shot proportions for a given team and opponent may yield (on average) a 1 or 2 point gain each quarter. This may still be beneficial for teams, as this could equate to 4 to 8 points across an entire match. However, it is important to note that this is the average +/- 95% CIs, and hence it will not occur the same each time.
 
 
 # Conclusion
