@@ -1427,7 +1427,7 @@ def relOddsVis(df_relOdds, df_teamInfo, colourDict, saveDir = os.getcwd()):
                  color = colourDict[currSquadName], linewidth = 2)
         
     #Add horizontal line at 2:1 value
-    ax.axhline(y = 1, linestyle = '--', linewidth = 1,
+    ax.axhline(y = 2, linestyle = '--', linewidth = 1,
                color = 'grey', zorder = 0)
     
     #Set X-ticks and labels
@@ -1524,7 +1524,7 @@ def relOddsDefVis(df_relOddsDef, df_teamInfo, colourDict, saveDir = os.getcwd())
                  color = colourDict[currSquadName], linewidth = 2)
         
     #Add horizontal line at 2:1 value
-    ax.axhline(y = 1, linestyle = '--', linewidth = 1,
+    ax.axhline(y = 2, linestyle = '--', linewidth = 1,
                color = 'grey', zorder = 0)
     
     #Set X-ticks and labels
