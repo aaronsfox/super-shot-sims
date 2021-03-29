@@ -510,6 +510,17 @@ def indCompSimVis(df_compSimResults, team1, team2, compProps, colourDict,
     teamCol1 = colourDict[team1]
     teamCol2 = colourDict[team2]
     
+    #Set string names for Thunderbirds as it's too long
+    if team1 == 'Thunderbirds':
+        team1str = 'T-Birds'
+    else:
+        team1str = team1
+    if team2 == 'Thunderbirds':
+        team2str = 'T-Birds'
+    else:
+        team2str = team2
+        
+    
     #Set an array to store win % in
     winProps = np.zeros([len(compProps),len(compProps)])
     lossProps = np.zeros([len(compProps),len(compProps)])
@@ -600,8 +611,8 @@ def indCompSimVis(df_compSimResults, team1, team2, compProps, colourDict,
             #This full title can only be one text colour, so we will 
             #have to replace it
             txt = ax[p1,p2].text(0.5, 1.075,
-                                 team2+' '+str(math.trunc(compProps[p1]*100))+'% / '+
-                                 team1+' '+str(math.trunc(compProps[p2]*100))+'%',
+                                 team2str+' '+str(math.trunc(compProps[p1]*100))+'% / '+
+                                 team1str+' '+str(math.trunc(compProps[p2]*100))+'%',
                                  ha = 'center', fontsize = 9,
                                  transform = ax[p1,p2].transAxes)
             #We get the bounding box associated with this text
@@ -617,13 +628,13 @@ def indCompSimVis(df_compSimResults, team1, team2, compProps, colourDict,
             #and do this separately to get different colours
             #Set opponent as left figure title and colour
             txt1 = ax[p1,p2].text(0.5 - titleWidth/2, 1.075,
-                                  team2+' '+str(math.trunc(compProps[p1]*100))+'%',
+                                  team2str+' '+str(math.trunc(compProps[p1]*100))+'%',
                                   ha = 'left', fontsize = 9,
                                   color = teamCol2,
                                   transform = ax[p1,p2].transAxes)
             #Set team as right figure title and colour
             txt2 = ax[p1,p2].text(0.5 + titleWidth/2, 1.075,
-                                  team1+' '+str(math.trunc(compProps[p2]*100))+'%',
+                                  team1str+' '+str(math.trunc(compProps[p2]*100))+'%',
                                   ha = 'right', fontsize = 9,
                                   color = teamCol1,
                                   transform = ax[p1,p2].transAxes)
@@ -738,7 +749,7 @@ def indCompSimVis(df_compSimResults, team1, team2, compProps, colourDict,
 
 def allCompSimVis(df_compSimResults, teamName, compProps, colourDict, saveDir = os.getcwd()):
     
-    # Function to plot distributions of competitive sims for two teams
+    # Function to plot distributions of competitive sims for one team
     #
     # Input:    df_compSimResults - results dataframe of simulations
     #           teamName - name of team for current visualisation
@@ -754,6 +765,12 @@ def allCompSimVis(df_compSimResults, teamName, compProps, colourDict, saveDir = 
     
     #Get the current teams colour
     teamCol = colourDict[teamName]
+    
+    #Set string names for Thunderbirds as it's too long
+    if teamName == 'Thunderbirds':
+        teamNameStr = 'T-Birds'
+    else:
+        teamNameStr = teamName
     
     #Set an array to store win % in
     winProps = np.zeros([len(compProps),len(compProps)])
@@ -846,8 +863,8 @@ def allCompSimVis(df_compSimResults, teamName, compProps, colourDict, saveDir = 
             #This full title can only be one text colour, so we will 
             #have to replace it
             txt = ax[p1,p2].text(0.5, 1.075,
-                                 'Opponents '+str(math.trunc(compProps[p1]*100))+'% / '+
-                                 teamName+' '+str(math.trunc(compProps[p2]*100))+'%',
+                                 'Opp. '+str(math.trunc(compProps[p1]*100))+'% / '+
+                                 teamNameStr+' '+str(math.trunc(compProps[p2]*100))+'%',
                                  ha = 'center', fontsize = 9,
                                  transform = ax[p1,p2].transAxes)
             #We get the bounding box associated with this text
@@ -863,13 +880,13 @@ def allCompSimVis(df_compSimResults, teamName, compProps, colourDict, saveDir = 
             #and do this separately to get different colours
             #Set opponent as left figure title and colour
             txt1 = ax[p1,p2].text(0.5 - titleWidth/2, 1.075,
-                                  'Opponents '+str(math.trunc(compProps[p1]*100))+'%',
+                                  'Opp. '+str(math.trunc(compProps[p1]*100))+'%',
                                   ha = 'left', fontsize = 9,
                                   color = 'k',
                                   transform = ax[p1,p2].transAxes)
             #Set team as right figure title and colour
             txt2 = ax[p1,p2].text(0.5 + titleWidth/2, 1.075,
-                                  teamName+' '+str(math.trunc(compProps[p2]*100))+'%',
+                                  teamNameStr+' '+str(math.trunc(compProps[p2]*100))+'%',
                                   ha = 'right', fontsize = 9,
                                   color = teamCol,
                                   transform = ax[p1,p2].transAxes)

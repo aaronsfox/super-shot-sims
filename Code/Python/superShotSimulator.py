@@ -28,8 +28,8 @@ pd.options.mode.chained_assignment = None #turn off pandas chained warnings
 import numpy as np
 import scipy.stats as stats
 import random
-import seaborn as sns
-import matplotlib.pyplot as plt
+# import seaborn as sns
+# import matplotlib.pyplot as plt
 # from matplotlib.patches import Rectangle 
 import os
 import math
@@ -731,6 +731,7 @@ if runStandardSims:
     #Create dictionary to store data in
     superSimResults = {'squadId': [], 'squadNickname': [],
                        'nShots': [], 'nStandard': [], 'nSuper': [],
+                       'shotOutcomeStandard': [], 'shotOutcomeSuper': [],
                        'superProp': [], 'superPropCat': [], 'totalPts': []}
     
     #Set list to store actual team super shot proportions in
@@ -740,7 +741,7 @@ if runStandardSims:
     teamList = list(colourDict.keys())
     
     #Loop through teams
-    for tt in range(0,len(teamList)):
+    for tt in range(len(teamList)):
         
         #Set current squad labels
         currSquadId = teamInfo['squadId'][teamInfo['squadNickname'].index(teamList[tt])]
@@ -760,7 +761,7 @@ if runStandardSims:
         missedSuper = list()
         totalShots = list()
         #Get data from each round
-        for rr in range(0,nRounds):
+        for rr in range(nRounds):
             #Loop through quarters within rounds too
             for qq in range(0,4):
                 #Made standard shots
@@ -816,10 +817,10 @@ if runStandardSims:
         totalMissedSuper = np.sum(missedSuper)
         
         #Loop through the different super shot proportions
-        for pp in range(0,len(superShotProps)):
+        for pp in range(len(superShotProps)):
             
             #Loop through the simulations
-            for nn in range(0,nSims):
+            for nn in range(nSims):
                 
                 #Get the current number of shots for the quarter
                 nShots = int(nShotVals[nn])
@@ -863,19 +864,29 @@ if runStandardSims:
                     elif actualProp > 0.9:
                         propCat = '90%-100%'
                     
+                    #Set list for storing standard shot outcomes
+                    standardOutcome = []                    
                     #Loop through standard shots and determine score
                     if nStandard > 0:
                         #Sample shot success probability for the shots from beta distribution
                         shotProb = np.random.beta(totalMadeStandard, totalMissedStandard,
                                                   size = nStandard)
                         #Loop through shots            
-                        for ss in range(0,nStandard):
+                        for ss in range(nStandard):
                             #Get random number to determine shot success
                             r = random.random()
                             #Check shot success and add to total points if successful
                             if r < shotProb[ss]:
+                                #Add to total points
                                 totalPts = totalPts + 1
-                        
+                                #Append shot outcome
+                                standardOutcome.append('made')
+                            else:
+                                #Append shot outcome
+                                standardOutcome.append('miss')
+                    
+                    #Set list for storing super shot outcomes
+                    superOutcome = []
                     #Loop through super shots and determine score
                     if nSuper > 0:
                         #Sample shot success probability for the shots from beta distribution
@@ -887,7 +898,13 @@ if runStandardSims:
                             r = random.random()
                             #Check shot success and add to total points if successful
                             if r < shotProb[ss]:
+                                #Add to total points
                                 totalPts = totalPts + 2
+                                #Append shot outcome
+                                superOutcome.append('made')
+                            else:
+                                #Append shot outcome
+                                superOutcome.append('miss')
                                 
                     #Store values in dictionary
                     superSimResults['squadId'].append(currSquadId)
@@ -898,6 +915,8 @@ if runStandardSims:
                     superSimResults['superProp'].append(actualProp)
                     superSimResults['superPropCat'].append(propCat)
                     superSimResults['totalPts'].append(totalPts)
+                    superSimResults['shotOutcomeStandard'].append(standardOutcome)
+                    superSimResults['shotOutcomeSuper'].append(superOutcome)
     
     #Convert sim dictionary to dataframe
     df_superSimResults = pd.DataFrame.from_dict(superSimResults)
@@ -1173,7 +1192,7 @@ if visStandardSims:
 else:
     
     #Don't re-do visuals
-    print('Visuals seemingly already generated...')
+    print('Visuals not requested.')
     
 # %% 'Turnover' super shot simulations
 
@@ -1210,9 +1229,9 @@ if runCompSims:
     leagueShots = list()
     homeShots = list()
     #Get data from each round
-    for rr in range(0,nRounds):
+    for rr in range(nRounds):
         #Loop through match number
-        for mm in range(0,4):
+        for mm in range(4):
             
             #Get home squad ID for identification
             homeSquadId = matchInfo['homeSquadId'][(mm+1)+(rr*4)-1]
@@ -1264,8 +1283,10 @@ if runCompSims:
     #Set a dictionary to store simulation results in
     compSimResults = {'teamName': [], 'teamSuperProp': [],
                       'teamShots': [], 'teamSuperShots': [], 'teamStandardShots': [],
+                      'teamShotOutcomeStandard': [], 'teamShotOutcomeSuper': [],
                       'opponentName': [], 'opponentSuperProp': [],
                       'opponentShots': [], 'opponentSuperShots': [], 'opponentStandardShots': [],
+                      'opponentShotOutcomeStandard': [], 'opponentShotOutcomeSuper': [],
                       'teamScore': [], 'opponentScore': [], 'margin': []}
     
     #Set proportions to compare teams against. In these sims we'll go with 0%, 25%,
@@ -1273,7 +1294,7 @@ if runCompSims:
     compProps = np.array([0.0,0.25,0.50,0.75,1.0])
     
     #Loop through teams and run 'competitive' power 5 period sims
-    for tt in range(0,len(teamList)):
+    for tt in range(len(teamList)):
         
         #Set seed to same for each team
         np.random.seed(999)
@@ -1295,9 +1316,9 @@ if runCompSims:
         madeSuper = list()
         missedSuper = list()
         #Get data from each round
-        for rr in range(0,nRounds):
+        for rr in range(nRounds):
             #Loop through quarters within rounds too
-            for qq in range(0,4):
+            for qq in range(4):
                 #Made standard shots
                 madeStandard.append(df_currSquadShots.loc[(df_currSquadShots['roundNo'] == rr+1) & 
                                                           (df_currSquadShots['period'] == qq+1) & 
@@ -1334,13 +1355,15 @@ if runCompSims:
         teamShots = list()
         teamSuperShots = list()
         teamStandardShots = list()
-        teamSuperProp = list()    
+        teamSuperProp = list()
+        teamStandardOutcomes = list()
+        teamSuperOutcomes = list()
         
         #Loop through the proportions
-        for pp in range(0,len(compProps)):
+        for pp in range(len(compProps)):
             
             #Loop through the number of simulations
-            for nn in range(0,nSims):
+            for nn in range(nSims):
                 
                 #Set standard and super shot proportions
                 superProp = compProps[pp]
@@ -1353,19 +1376,29 @@ if runCompSims:
                 #Set variable to tally current score
                 currTeamScore = 0
                 
+                #Set list to store standard shot outcomes in
+                standardOutcomes = []
                 #Loop through standard shots and add to total
                 if standardShots > 0:
                     #Sample shot success probability from teams data
                     shotProb = np.random.beta(totalMadeStandard, totalMissedStandard,
                                               size = int(standardShots))
                     #Loop through shots
-                    for ss in range(0,int(standardShots)):
+                    for ss in range(int(standardShots)):
                         #Get random number to determine shot success
                         r = random.random()
                         #Check shot success and add to total points if successful
                         if r < shotProb[ss]:
+                            #Add to team score
                             currTeamScore = currTeamScore + 1
+                            #Append outcome to list
+                            standardOutcomes.append('made')
+                        else:
+                            #Append outcome to list
+                            standardOutcomes.append('miss')
                             
+                #Set list to store standard shot outcomes in
+                superOutcomes = []
                 #Loop through super shots and add to total
                 if superShots > 0:
                     #Sample shot success probability from teams data
@@ -1377,7 +1410,14 @@ if runCompSims:
                         r = random.random()
                         #Check shot success and add to total points if successful
                         if r < shotProb[ss]:
+                            #Add to team score
                             currTeamScore = currTeamScore + 2
+                            #Append outcome to list
+                            superOutcomes.append('made')
+                        else:
+                            #Append outcome to list
+                            superOutcomes.append('miss')
+                            
                             
                 #Append data to team list
                 teamScore.append(currTeamScore)
@@ -1385,6 +1425,8 @@ if runCompSims:
                 teamSuperShots.append(superShots)
                 teamStandardShots.append(standardShots)
                 teamSuperProp.append(compProps[pp])
+                teamStandardOutcomes.append(standardOutcomes)
+                teamSuperOutcomes.append(superOutcomes)
                         
         #Loop through opponents
         for cc in range(tt+1,len(teamList)):
@@ -1409,9 +1451,9 @@ if runCompSims:
             madeSuper = list()
             missedSuper = list()
             #Get data from each round
-            for rr in range(0,nRounds):
+            for rr in range(nRounds):
                 #Loop through quarters within rounds too
-                for qq in range(0,4):
+                for qq in range(4):
                     #Made standard shots
                     madeStandard.append(df_currSquadShots.loc[(df_currSquadShots['roundNo'] == rr+1) & 
                                                               (df_currSquadShots['period'] == qq+1) & 
@@ -1444,17 +1486,19 @@ if runCompSims:
             #using the team B number of shots
             
             #Loop through the proportions
-            for pp in range(0,len(compProps)):
+            for pp in range(len(compProps)):
                 
                 #Set variable for total score and shots
                 oppScore = list()
                 oppShots = list()
                 oppSuperShots = list()
                 oppStandardShots = list()
-                oppSuperProp = list() 
+                oppSuperProp = list()
+                oppStandardOutcomes = list()
+                oppSuperOutcomes = list()
                 
                 #Loop through the number of simulations
-                for nn in range(0,nSims):
+                for nn in range(nSims):
                     
                     #Set standard and super shot proportions
                     superProp = compProps[pp]
@@ -1467,6 +1511,8 @@ if runCompSims:
                     #Set variable to tally current score
                     currOppScore = 0
                     
+                    #Set list to store standard shot outcomes in
+                    standardOutcomes = []                    
                     #Loop through standard shots and add to total
                     if standardShots > 0:
                         #Sample shot success probability from teams data
@@ -1478,8 +1524,16 @@ if runCompSims:
                             r = random.random()
                             #Check shot success and add to total points if successful
                             if r < shotProb[ss]:
+                                #Add to opp score
                                 currOppScore = currOppScore + 1
-                                
+                                #Append outcome to list
+                                standardOutcomes.append('made')
+                            else:
+                                #Append outcome to list
+                                standardOutcomes.append('miss')
+                    
+                    #Set list to store standard shot outcomes in
+                    superOutcomes = []
                     #Loop through super shots and add to total
                     if superShots > 0:
                         #Sample shot success probability from teams data
@@ -1491,7 +1545,13 @@ if runCompSims:
                             r = random.random()
                             #Check shot success and add to total points if successful
                             if r < shotProb[ss]:
+                                #Add to opp score
                                 currOppScore = currOppScore + 2
+                                #Append outcome to list
+                                superOutcomes.append('made')
+                            else:
+                                #Append outcome to list
+                                superOutcomes.append('miss')
                                 
                     #Append data to team list
                     oppScore.append(currOppScore)
@@ -1499,6 +1559,8 @@ if runCompSims:
                     oppSuperShots.append(superShots)
                     oppStandardShots.append(standardShots)
                     oppSuperProp.append(compProps[pp])
+                    oppStandardOutcomes.append(standardOutcomes)
+                    oppSuperOutcomes.append(superOutcomes)
                     
                 #Within each proportion we duplicate the opposition results
                 #so that they can be compared to each of the other teams
@@ -1508,10 +1570,12 @@ if runCompSims:
                 oppSuperShots = oppSuperShots * len(compProps)
                 oppStandardShots = oppStandardShots * len(compProps)
                 oppSuperProp = oppSuperProp * len(compProps)
+                oppStandardOutcomes = oppStandardOutcomes * len(compProps)
+                oppSuperOutcomes = oppSuperOutcomes * len(compProps)
                     
                 #Calculate margin between current opponent proportion and all team scores
                 #Append to the data dictionary
-                for kk in range(0,len(teamScore)):
+                for kk in range(len(teamScore)):
     
                     #Main team
                     compSimResults['teamName'].append(teamList[tt])
@@ -1519,12 +1583,16 @@ if runCompSims:
                     compSimResults['teamShots'].append(teamShots[kk])
                     compSimResults['teamSuperShots'].append(teamSuperShots[kk])
                     compSimResults['teamStandardShots'].append(teamStandardShots[kk])
+                    compSimResults['teamShotOutcomeStandard'].append(teamStandardOutcomes[kk])
+                    compSimResults['teamShotOutcomeSuper'].append(teamSuperOutcomes[kk])
                     #Opponent team
                     compSimResults['opponentName'].append(teamList[cc])
                     compSimResults['opponentSuperProp'].append(oppSuperProp[kk])
                     compSimResults['opponentShots'].append(oppShots[kk])
                     compSimResults['opponentSuperShots'].append(oppSuperShots[kk])
                     compSimResults['opponentStandardShots'].append(oppStandardShots[kk])
+                    compSimResults['opponentShotOutcomeStandard'].append(oppStandardOutcomes[kk])
+                    compSimResults['opponentShotOutcomeSuper'].append(oppSuperOutcomes[kk])
                     #Scoring
                     compSimResults['teamScore'].append(teamScore[kk])
                     compSimResults['opponentScore'].append(oppScore[kk])
@@ -1545,7 +1613,7 @@ else:
 # %% Visualise 'competitive' sims
 
 #Set a check in place for whether to create standard sim visuals
-visCompSims = False ##### change to True to re-do visuals
+visCompSims = True ##### change to True to re-do visuals
 
 if visCompSims:
 
@@ -1555,8 +1623,8 @@ if visCompSims:
     # of overall strategy for each team.
     
     #Compare individual teams over each iteration of 'match-ups'
-    for tt in range(0,len(teamList)):
-        for cc in range(0,len(teamList)):
+    for tt in range(len(teamList)):
+        for cc in range(len(teamList)):
             
             #Set a condition to only plot if team names don't match
             if teamList[tt] != teamList[cc]:
@@ -1570,7 +1638,7 @@ if visCompSims:
                                        tt, cc, saveDir = '..\\competitiveSims\\figures')
     
     #Compare each teams match-ups against all other teams
-    for tt in range(0,len(teamList)):
+    for tt in range(len(teamList)):
         
         #Plot figure
         figHelper.allCompSimVis(df_compSimResults, teamList[tt], compProps, colourDict,
@@ -1588,7 +1656,11 @@ if visCompSims:
     #Create dictionary to append these data to
     marginDict = {'teamName': [], 'teamSuperProp': [],
                   'opponentName': [], 'opponentSuperProp': [],
-                  'margin': []}
+                  'margin': [],
+                  'teamShots': [], 'teamSuperShots': [], 'teamStandardShots': [],
+                  'teamShootingPer': [], 'teamStandardShootingPer': [], 'teamSuperShootingPer': [],
+                  'opponentShots': [], 'opponentSuperShots': [], 'opponentStandardShots': [],
+                  'opponentShootingPer': [], 'opponentStandardShootingPer': [], 'opponentSuperShootingPer': []}
     
     #Loop through teams and extract their margin results and the proportions
     for tt in range (len(teamList)):
@@ -1597,6 +1669,42 @@ if visCompSims:
         #This is done separately given the need to modify margin
         df_currTeam1 = df_compSimResults.loc[(df_compSimResults['teamName'] == teamList[tt]),]
         df_currTeam2 = df_compSimResults.loc[(df_compSimResults['opponentName'] == teamList[tt]),]
+        df_currTeam1.reset_index(inplace = True)
+        df_currTeam2.reset_index(inplace = True)
+        
+        #Calculate shooting percentage outcomes for each dataframe
+        #Get counts of each made list
+        standardTeam1 = []
+        superTeam1 = []
+        standardTeam2 = []
+        superTeam2 = []
+        standardOpp1 = []
+        superOpp1 = []
+        standardOpp2 = []
+        superOpp2 = []
+        for cc in range(len(df_currTeam1)):
+            standardTeam1.append(df_currTeam1['teamShotOutcomeStandard'][cc].count('made'))
+            superTeam1.append(df_currTeam1['teamShotOutcomeSuper'][cc].count('made'))
+            standardOpp1.append(df_currTeam1['opponentShotOutcomeStandard'][cc].count('made'))
+            superOpp1.append(df_currTeam1['opponentShotOutcomeSuper'][cc].count('made'))
+        for cc in range(len(df_currTeam2)):
+            standardTeam2.append(df_currTeam2['teamShotOutcomeStandard'][cc].count('made'))
+            superTeam2.append(df_currTeam2['teamShotOutcomeSuper'][cc].count('made'))
+            standardOpp2.append(df_currTeam2['opponentShotOutcomeStandard'][cc].count('made'))
+            superOpp2.append(df_currTeam2['opponentShotOutcomeSuper'][cc].count('made'))
+        #Calculate shooting percentages at each simulation
+        standardPerTeam1 = standardTeam1 / df_currTeam1['teamStandardShots']
+        superPerTeam1 = superTeam1 / df_currTeam1['teamSuperShots']
+        allPerTeam1 = [x + y for x, y in zip(standardTeam1, superTeam1)] / df_currTeam1['teamShots']
+        standardPerTeam2 = standardTeam2 / df_currTeam2['teamStandardShots']
+        superPerTeam2 = superTeam2 / df_currTeam2['teamSuperShots']
+        allPerTeam2 = [x + y for x, y in zip(standardTeam2, superTeam2)] / df_currTeam2['teamShots']
+        standardPerOpp1 = standardOpp1 / df_currTeam1['opponentStandardShots']
+        superPerOpp1 = superOpp1 / df_currTeam1['opponentSuperShots']
+        allPerOpp1 = [x + y for x, y in zip(standardOpp1, superOpp1)] / df_currTeam1['opponentShots']
+        standardPerOpp2 = standardOpp2 / df_currTeam2['opponentStandardShots']
+        superPerOpp2 = superOpp2 / df_currTeam2['opponentSuperShots']
+        allPerOpp2 = [x + y for x, y in zip(standardOpp2, superOpp2)] / df_currTeam2['opponentShots']
         
         #Add data to dictionary
         #First dataframe - use normal margin and 'team' data
@@ -1605,12 +1713,36 @@ if visCompSims:
         marginDict['opponentName'].extend(list(df_currTeam1['opponentName'].values))
         marginDict['opponentSuperProp'].extend(list(df_currTeam1['opponentSuperProp'].values))
         marginDict['margin'].extend(list(df_currTeam1['margin'].values))
+        marginDict['teamShots'].extend(list(df_currTeam1['teamShots'].values))
+        marginDict['teamSuperShots'].extend(list(df_currTeam1['teamSuperShots'].values))
+        marginDict['teamStandardShots'].extend(list(df_currTeam1['teamStandardShots'].values))
+        marginDict['teamShootingPer'].extend(allPerTeam1)
+        marginDict['teamStandardShootingPer'].extend(standardPerTeam1)
+        marginDict['teamSuperShootingPer'].extend(superPerTeam1)
+        marginDict['opponentShots'].extend(list(df_currTeam1['opponentShots'].values))
+        marginDict['opponentSuperShots'].extend(list(df_currTeam1['opponentSuperShots'].values))
+        marginDict['opponentStandardShots'].extend(list(df_currTeam1['opponentStandardShots'].values))
+        marginDict['opponentShootingPer'].extend(allPerOpp1)
+        marginDict['opponentStandardShootingPer'].extend(standardPerOpp1)
+        marginDict['opponentSuperShootingPer'].extend(superPerOpp1)
         #Second dataframe - invert margin and use 'opponent' data
         marginDict['teamName'].extend(list(df_currTeam2['opponentName'].values))
         marginDict['teamSuperProp'].extend(list(df_currTeam2['opponentSuperProp'].values))
         marginDict['opponentName'].extend(list(df_currTeam2['teamName'].values))
         marginDict['opponentSuperProp'].extend(list(df_currTeam2['teamSuperProp'].values))
         marginDict['margin'].extend(list(df_currTeam2['margin'].values*-1))
+        marginDict['teamShots'].extend(list(df_currTeam2['opponentShots'].values))
+        marginDict['teamSuperShots'].extend(list(df_currTeam2['opponentSuperShots'].values))
+        marginDict['teamStandardShots'].extend(list(df_currTeam2['opponentStandardShots'].values))
+        marginDict['teamShootingPer'].extend(allPerOpp2)
+        marginDict['teamStandardShootingPer'].extend(standardPerOpp2)
+        marginDict['teamSuperShootingPer'].extend(superPerOpp2)
+        marginDict['opponentShots'].extend(list(df_currTeam2['teamShots'].values))
+        marginDict['opponentSuperShots'].extend(list(df_currTeam2['teamSuperShots'].values))
+        marginDict['opponentStandardShots'].extend(list(df_currTeam2['teamStandardShots'].values))
+        marginDict['opponentShootingPer'].extend(allPerTeam2)
+        marginDict['opponentStandardShootingPer'].extend(standardPerTeam2)
+        marginDict['opponentSuperShootingPer'].extend(superPerTeam2)
         
     #Convert to dataframe
     df_compSimMargins = pd.DataFrame.from_dict(marginDict)
@@ -1637,7 +1769,7 @@ else:
 rowCats = []
 
 #Loop through teams
-for tt in range(0,len(teamList)):
+for tt in range(len(teamList)):
     
     #Set lists to store win and loss props in
     winProps = []
