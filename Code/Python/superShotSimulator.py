@@ -18,6 +18,8 @@ Created on Sun Aug 23 21:13:39 2020
     analysis is to understand where optimality may lie for the proportion of a teams
     total shots should be Super Shots.
     
+    TODO: Potentially add regression notes...
+    
 """
 
 # %% Import packages
@@ -69,6 +71,9 @@ colourDict = {'Fever': '#00953b',
               'Vixens': '#00a68e'}
 
 # %% Load in match data
+
+##### TODO: For public repo of this data --- run this and generate a de-identified
+##### database, then just import this database
 
 #Navigate to data directory
 os.chdir('..\\..\\Data\\SuperNetball2020_CD')
@@ -927,6 +932,12 @@ if runStandardSims:
     
 else:
     
+    #Get number of rounds (for later use)
+    nRounds = max(df_scoreFlow['roundNo'])
+    
+    #Get alphabetically ordered teams to loop through (for later use)
+    teamList = list(colourDict.keys())
+    
     #Load the sim data from file
     df_superSimResults = pd.read_csv('..\\..\\Results\\standardSims\\tables\\superSimResults.csv')
 
@@ -1607,13 +1618,16 @@ if runCompSims:
 
 else:
     
+    #Define competitive proportions for later use
+    compProps = np.array([0.0,0.25,0.50,0.75,1.0])
+    
     #Load existing data
     df_compSimResults = pd.read_csv('..\\competitiveSims\\tables\\compSimResults_all.csv')
 
 # %% Visualise 'competitive' sims
 
 #Set a check in place for whether to create standard sim visuals
-visCompSims = True ##### change to True to re-do visuals
+visCompSims = False ##### change to True to re-do visuals
 
 if visCompSims:
 
@@ -1850,10 +1864,58 @@ df_compSimMarginSummary.to_csv('..\\competitiveSims\\tables\\compSimMargins_summ
 # Regression model to determine important factors in determining super shot 
 # period margin...
 
+# Attempt to create a bayesian linear model for the Fever's outcomes vs. Firebirds (for size)
+# Fever is easiest as don't need to mess with inverted margins yet...
+
+#See: https://github.com/WillKoehrsen/Data-Analysis/blob/master/bayesian_lr/Bayesian%20Linear%20Regression%20Project.ipynb
+
+#Extract team
+df_currTeam = df_compSimMargins.loc[(df_compSimMargins['teamName'] == 'Fever') &
+                                    (df_compSimMargins['opponentName'] == 'Firebirds'),]
+### Need opponent name check to for others probably?
+
+#Convert nan's to zero
+##### TODO: Probably better to remove these for inaccuracy 
+df_currTeam.fillna(0, inplace = True)
+
+#Drop the opponent and team name
+df_currTeam.drop('opponentName', inplace = True, axis = 1)
+df_currTeam.drop('teamName', inplace = True, axis = 1)
+
+#Just use all variables here
+#There's probably some double up here with total shots, and then standard/super shots
+#Also consider relative variables (i.e. team took 1.5x higher proportion of super shots)
+#This is probably better as it captures the variability between teams better
+
+#Check if super shot proportion is an actual continuous calculation or categorical?
+
+#Split data into train (70%) and test (30%)
+from sklearn.model_selection import train_test_split
+labels = df_currTeam['margin']
+X_train, X_test, y_train, y_test = train_test_split(df_currTeam, labels, 
+                                                    test_size = 0.30,
+                                                    random_state = 123)
 
 
+#Create the formula for the regression problem
+formula = 'margin ~ ' + ' + '.join(['%s' % variable for variable in X_train.columns[1:]])
+# formula
 
+#Build a bayesian model using somewhat standard parameters
+import pymc3 as pm
+with pm.Model() as normal_model:
+    
+    # The prior for the model parameters will be a normal distribution
+    family = pm.glm.families.Normal()
+    
+    # Creating the model requires a formula and data (and optionally a family)
+    pm.GLM.from_formula(formula, data = X_train, family = family)
+    
+    # Perform Markov Chain Monte Carlo sampling
+    normal_trace = pm.sample(draws=2000, chains = 2, tune = 500)
+    
+    #### this potentially takes a long time?
 
-
+#### don't think the model works that great?
 
 
