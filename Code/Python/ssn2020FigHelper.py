@@ -1449,7 +1449,7 @@ def relOddsVis(df_relOdds, df_teamInfo, colourDict, saveDir = os.getcwd()):
     
     #Set X-ticks and labels
     ax.set_xticks([1,3,5])
-    ax.set_xticklabels(['All Match', 'Standard Period', 'Super Shot Period'])
+    ax.set_xticklabels(['All Match', 'Standard Period', 'Power 5 Period'])
     
     #Set Y-axis limits and label
     ax.set_ylim([0,ax.get_ylim()[1]])
@@ -1546,7 +1546,7 @@ def relOddsDefVis(df_relOddsDef, df_teamInfo, colourDict, saveDir = os.getcwd())
     
     #Set X-ticks and labels
     ax.set_xticks([1,3,5])
-    ax.set_xticklabels(['All Match', 'Standard Period', 'Super Shot Period'])
+    ax.set_xticklabels(['All Match', 'Standard Period', 'Power 5 Period'])
     
     #Set Y-axis limits and label
     ax.set_ylim([0,ax.get_ylim()[1]])
