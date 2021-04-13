@@ -37,17 +37,26 @@ knitr::opts_chunk$set(echo = FALSE)
 
 #Import libraries
 library(kableExtra)
+library(dplyr)
+library(tidyverse)
 
 #Include graphics requires full path, so set that to a variable here
 workDir = getwd()
 
 ```
 
+# TODO:
+
+- Check consistency of Super Shot vs. Power 5 period (use Power 5 period)
+- Look to ESSA abstract for some sample points and language
+
 # Introduction
 
 Netball is a court-based team sport played predominantly among Commonwealth nations, and has one of the highest participation rates for team sports in Australia [@AustralianSportsCommission2020]. As in many court-based team sports, the goal of netball is to score more than the opposition. Netball is, however, unique in that goals may only be scored by two players on each team from within the 'shooting circle' (i.e. a half circle around the goal with a 4.9m radius) at their end of the court [@INFrules]. Traditionally, goals scored from within this circle result in one 'goal' or 'point' for the team [@INFrules]. In the 2020 season, Australia's national elite-level league (i.e. Suncorp Super Netball) made the decision to introduce the 'Super Shot' [@NetballAusSuperShotIntro]. The Super Shot period provided teams an opportunity to gain one- versus two-points for successful shots made from the 'inner' (i.e. 0m-3.0m) versus 'outer' (i.e. 3.0m-4.9m), respectively, within the final five minutes of each quarter [@NetballAusSuperShotIntro]. The league has confirmed that the Super Shot rule will continue through the 2021 season [@announcementRef].
 
 Our analysis prior to the 2020 season [@Fox2020] suggested that the added value of the Super Shot (i.e. two-points) aligned well with the elevated risk of shooting from long range, and that teams may have been able to maximise their scoring by taking a high proportion of Super Shots. These findings were, however, based on shooting statistics from past seasons where the Super Shot rule was not in effect – and further investigation of leagues where a 'two-point rule' was in place (i.e. international Fast5) resulted in a much higher risk of missing long-range shots [@Fox2020]. We hypothesised that the elevated risk of missing long-range shots with a 'two-point rule' in place stems from situational factors, whereby defensive strategies were likely altered to place a heavier emphasis on defending long-range shots [@Fox2020]. Data from the first full season with the Super Shot in place provides an opportunity to re-evaluate the risk-reward value of taking Super Shots with more valid shooting statistics. Further, these data can provide a better foundation for simulating Super Shot periods as a means to identify optimal shooting strategies. In the present study we re-visited the question of whether the weighting of a 2:1 value is appropriate based on the relative risk of missing a shot from the outer versus inner circle during the Super Shot period using data from the 2020 season. Further – we ran a series of simulations of the five-minute Super Shot period, driven by shooting statistics from the 2020 season, in an attempt to identify optimal team-specific shooting strategies for the proportion of Super Shots to take. 
+
+***TODO: add aim of competitive sims...***
 
 # Methods
 
@@ -63,21 +72,17 @@ We used the {SuperNetballR}***TODO: citation*** package to extract match data fr
 
 Our study required estimating the probability of making versus missing shots from the inner versus outer circle across the different teams. We achieved this by defining a beta distribution in a probability density function for the different circle zones, specified by:
 
-***TODO: add math function***
+$$f(x,a,b) = \frac{\Gamma(a+b)x^{a-1}(1-x)^{b-1}}{\Gamma(a)\Gamma(b)} $$
+where $a$ and $b$ represent the number of missed and made shots within a circle zone, respectively; $x$ is the probability of $a$ relative to $b$; and $\Gamma$ is the gamma function [@Virtanen2020,@NIST2020]. Probability density functions were created for made versus missed shots in the inner and outer circles for each team, as well as all teams combined, to be used in subsequent analyses.
 
-where *a* and *b* represent the number of missed and made shots within a circle zone, respectively; ***TODO: add x math symbol*** is the probability of *a* relative to *b*; and ***TODO: add gamma*** is the gamma function [@Virtanen2020,@NIST2020]. Probability density functions were created for made versus missed shots in the inner and outer circles for each team, as well as all teams combined, to be used in subsequent analyses.
+To examine the relative value of the 2:1 point ratio, we replicated the approach from our previous work [@Fox2020], but this time with data from the 2020 season. Specifically, we compared the average relative odds (± 95% confidence intervals [CI]) of missing from the outer versus inner circle during the Super Shot period. This was achieved by dividing randomly sampled values (*n* = 100,000) from the probability density functions of the outer by those from the inner circle at each sample iteration. This analysis was run using shooting statistics from the entire league, as well as individual teams, to give overall and team-specific risk-reward values for attempting Super Shots. We also applied this analysis to opposition shooting statistics against each team, providing a risk-reward value for attempting Super Shots against an opponent. Theoretically, the relative odds of missing from the outer to inner circle should match the ratio of points awarded (i.e. 2:1) for the Super Shot to represent 'good value.'
 
-To examine the relative value of the 2:1 point ratio, we replicated the approach from our previous work [@Fox2020] but this time with data from the 2020 season. Specifically, we compared the average relative odds (± 95% confidence intervals [CI]) of missing from the outer versus inner circle during the Super Shot period. This was achieved by dividing randomly sampled values (*n* = 1,000) from the probability density functions of the outer by those from the inner circle at each sample iteration. This analysis was run using shooting statistics from the entire league, as well as individual teams, to give overall and team-specific risk-reward values for attempting Super Shots. Theoretically, the relative odds of missing from the outer to inner circle should match the ratio of points awarded (i.e. 2:1) for the Super Shot to represent 'good value.'
-
-***TODO: add defensive calculations too...***
-
+Next, we ran a series of simulations (*n* = 1,000 each) of the Power 5 period for each team altering the proportion of Super Shots taken from 0% to 100%, at 10% increments. We used the previously calculated probabilities of making versus missing shots from within and outside the outer circle during the Power 5 period from each team to estimate the number of points the team may score during this period. ACross each individual simulation, the total number of shots the team would take and the proportion of these that were Super Shots was first determined. We determined the mean and standard deviation for the number of shots a team would expect during a Power 5 period based on overall season statistics — and the total number of shots for a team in an individual simulation was randomly sampled from a truncated normal distribution between the lower and upper 95% CI limits of the mean/standard deviation. The number of standard versus Super Shots being taken within the simulation was then determined based on the current Super Shot proportion (i.e. from 0% to 100%) being examined. The success (i.e. make vs. miss) of each individual standard or Super Shot within the simulation was then determined by generating a random value between 0 and 1, alongside a value sampled from the teams relevant probability density function of making a shot from the relevant location (i.e. inner or outer circle). If the value sampled from the probability density function was greater versus lower than the random value — the shot was considered successful versus unsuccessful, respectively. After all individual shots were simulated, the total team score was summed given the value of the made standard and Super shots. We examined the scores achieved, and calculated the relative frequency of when the minimum and maximum score was achieved for each team under the different Super Shot proportions.
 
 
 ...
 
-...combination of coded and publicly available data...
 
-Our approach in the present paper to simulate Super Shot scoring periods differs to our original work [@Fox2020]. Previously, we allocated an overall success rate to shots from the inner versus outer circle (i.e. if the sampled probability was 50%, a total of 50% of shots were counted as successful). This contrasts to our present work, where we sample and apply the probability of shot success to simulated individual shots (i.e. if the sampled probability is 50%, the individual shot being simulated has a 50% probability of success). This approach likely reflects an improvement on our analysis, better representing the independent nature of shots in a netball match.
 
 
 
@@ -96,6 +101,10 @@ df_relOddsDef = read.csv(file = 'Results/relativeOdds/tables/RelativeOddsDef_Out
 
 #Load in margin and confidence interval dataframe
 df_marginTable = read.csv(file = 'Results/competitiveSims/tables/compSimMargins_summary.csv')
+
+#Load in min and max summary results
+df_summaryMinSimResults = read.csv(file = 'Results/standardSims/tables/standardSuperSimProportionMinSummary.csv')
+df_summaryMaxSimResults = read.csv(file = 'Results/standardSims/tables/standardSuperSimProportionMaxSummary.csv')
 
 
 ```
@@ -118,28 +127,112 @@ relOdds_all_super_m = df_relOdds[df_relOdds$team == "all" & df_relOdds$period ==
 relOdds_all_super_l95 = df_relOdds[df_relOdds$team == "all" & df_relOdds$period == "super",]$lower95
 relOdds_all_super_u95 = df_relOdds[df_relOdds$team == "all" & df_relOdds$period == "super",]$upper95
 
+#Clean up the min and max summary results tables
+#Drop the final three columns not required for table
+dropCol = c("meanShots", "minShots", "maxShots")
+df_summaryMinSimResults = df_summaryMinSimResults[ , !(names(df_summaryMinSimResults) %in% dropCol)]
+df_summaryMaxSimResults = df_summaryMaxSimResults[ , !(names(df_summaryMaxSimResults) %in% dropCol)]
+#Set column names to squad nickname
+df_summaryMinSimResults = df_summaryMinSimResults %>% 
+  remove_rownames %>%
+  column_to_rownames(var="squadNickname")
+df_summaryMaxSimResults = df_summaryMaxSimResults %>% 
+  remove_rownames %>%
+  column_to_rownames(var="squadNickname")
+#Rename columns
+df_summaryMinSimResults =df_summaryMinSimResults %>%
+  rename(
+    "0%-10%" = X0..10.,
+    "10%-20%" = X10..20.,
+    "20%-30%" = X20..30.,
+    "30%-40%" = X30..40.,
+    "40%-50%" = X40..50.,
+    "50%-60%" = X50..60.,
+    "60%-70%" = X60..70.,
+    "70%-80%" = X70..80.,
+    "80%-90%" = X80..90.,
+    "90%-100%" = X90..100.,
+  )
+df_summaryMaxSimResults =df_summaryMaxSimResults %>%
+  rename(
+    "0%-10%" = X0..10.,
+    "10%-20%" = X10..20.,
+    "20%-30%" = X20..30.,
+    "30%-40%" = X30..40.,
+    "40%-50%" = X40..50.,
+    "50%-60%" = X50..60.,
+    "60%-70%" = X60..70.,
+    "70%-80%" = X70..80.,
+    "80%-90%" = X80..90.,
+    "90%-100%" = X90..100.,
+  )
+#Multiply by 100 to present percentages as out of 100
+df_summaryMinSimResults = df_summaryMinSimResults[,2:ncol(df_summaryMinSimResults)]*100
+df_summaryMaxSimResults = df_summaryMaxSimResults[,2:ncol(df_summaryMaxSimResults)]*100
 
 ```
 
-The relative combined odds (± 95% CIs) from all teams of missing from the outer versus the inner circle across the entire match were `r round(relOdds_all_all_m,2)` [`r round(relOdds_all_all_l95,2)`, `r round(relOdds_all_all_u95,2)`], and `r round(relOdds_all_standard_m,2)` [`r round(relOdds_all_standard_l95,2)`, `r round(relOdds_all_standard_u95,2)`] versus `r round(relOdds_all_super_m,2)` [`r round(relOdds_all_super_l95,2)`, `r round(relOdds_all_super_u95,2)`] in the standard and Super Shot periods, respectively. The relative odds of missing from the outer versus inner circle across the individual teams were relatively similar, with the exception of the Fever having higher odds than the majority of teams across all match periods (see Figure \ref{fig:relativeOddsFig}). The relative odds (± 95% CIs) of missing from the outer versus inner circle during the Super Shot Period were greater than 2:1 across all teams (see Figure \ref{fig:relativeOddsFig}). No team was more effective in elevating the risk of missing from the outer versus inner circle, with mostly similar odds observed across all teams opponents in the various periods of the quarter (see Figure \ref{fig:relativeOddsDefFig}).
+The relative combined odds (± 95% CIs) from all teams of missing from the outer versus the inner circle across the entire match were `r round(relOdds_all_all_m,2)` [`r round(relOdds_all_all_l95,2)`, `r round(relOdds_all_all_u95,2)`], and `r round(relOdds_all_standard_m,2)` [`r round(relOdds_all_standard_l95,2)`, `r round(relOdds_all_standard_u95,2)`] versus `r round(relOdds_all_super_m,2)` [`r round(relOdds_all_super_l95,2)`, `r round(relOdds_all_super_u95,2)`] in the standard and Super Shot periods, respectively. The relative odds of missing from the outer versus inner circle across the individual teams were relatively similar, with the exception of the Fever having higher odds than the majority of teams across the entire match period (see Figure \ref{fig:relativeOddsFig}). The relative odds (± 95% CIs) of missing from the outer versus inner circle during the Super Shot Period were greater than 2:1 across all teams (see Figure \ref{fig:relativeOddsFig}). No team appeared more or less effective in elevating the risk of missing from the outer versus inner circle, with mostly similar odds observed across all teams opponents in the various periods of the quarter (see Figure \ref{fig:relativeOddsDefFig}).
 
-```{r relativeOddsFig, fig.cap = "A caption", out.width = '50%'}
-
-##### TODO: sort out caption and size etc.
+```{r relativeOddsFig, fig.cap = "Relative odds (mean $\\pm$ 95$\\%$ confidence intervals) of teams missing from the outer versus inner circle across the entire match, and during the standard and Super Shot scoring periods.", fig.align = 'center', out.width = '100%'}
 
 #Create figure from image
 knitr::include_graphics(paste(workDir,"/Results/relativeOdds/figures/RelativeOdds_OuterInner_AllTeams.pdf", sep = ""))
 
 ```
 
-```{r relativeOddsDefFig, fig.cap = "A caption", out.width = '50%'}
-
-##### TODO: sort out caption and size etc.
+```{r relativeOddsDefFig, fig.cap = "Relative odds (mean $\\pm$ 95$\\%$ confidence intervals) of opposition teams missing from the outer versus inner circle across the entire match, and during the standard and Super Shot scoring periods.", fig.align = 'center', out.width = '100%'}
 
 #Create figure from image
 knitr::include_graphics(paste(workDir,"/Results/relativeOdds/figures/RelativeOddsDef_OuterInner_AllTeams.pdf", sep = ""))
 
 ```
+
+...standard sims results...
+
+Across all teams, as the proportion of Super Shots increased within simulations both the maximum and minimum scores achievable increased and decreased, respectively (see Figure \ref{fig:heatMapFig}). Both the highest and lowest achievable scores for each team therefore came from simulations using a high proportion of Super Shots (i.e. > 80%). 
+
+\begin{landscape}
+``` {r heatMapFig, fig.cap= "Distribution of simulated score outputs for each team using different Super Shot proportions. Black outline represents each teams actual proportion of Super Shots taken during Power 5 periods from 2020 season statistics.", fig.align = 'center', out.width = '100%'}
+
+#Create figure from image
+knitr::include_graphics(paste(workDir,"/Results/standardSims/figures/SuperShotSimulations_HeatMap_AllTeams_Abs.pdf", sep = ""))
+
+```
+\end{landscape}
+
+...standard sim max and min results...
+
+```{r standardSimMaxSummaryTable, echo = FALSE}
+
+##### TODO: pretty up table!
+
+#the latex commands don't seem to work even when using format = "latex"
+
+# #Create colour ramp palette function
+# pal.fnc = colorRamp(c("red", "yellow", "green"))
+# 
+# max.val = max(df_summaryMaxSimResults[ , sapply(df_summaryMaxSimResults, is.numeric)], na.rm = TRUE)
+# 
+# df_summaryMaxSimResults = df_summaryMaxSimResults %>%
+#   mutate_if(is.numeric, function(x) {
+#   cell_spec(round(x,1), "latex", bold = F, color=grey(.3),
+#             background = rgb(pal.fnc(x/max.val) %>% replace(., is.na(.), 200), maxColorValue=255))
+#   })
+
+# option to check how to do this?
+###https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html#visualize-data-with-viridis-color
+# and
+###http://haozhu233.github.io/kableExtra/use_kableExtra_with_formattable.html
+
+#Print table of margin and confidence intervals
+kbl(df_summaryMaxSimResults, booktabs = T, caption = "TODO Add caption") %>%
+  kable_styling(latex_options = c("striped", "scale_down"))
+
+```
+
+
+
 
 ...
 
@@ -151,7 +244,7 @@ knitr::include_graphics(paste(workDir,"/Results/relativeOdds/figures/RelativeOdd
 ##### TODO: pretty up table!
 
 #Print table of margin and confidence intervals
-kbl(df_marginTable, booktabs = T, caption = "Table X: TODO Add caption") %>%
+kbl(df_marginTable, booktabs = T, caption = "TODO Add caption") %>%
   kable_styling(latex_options = c("striped", "scale_down")) %>%
   landscape()
 
@@ -164,13 +257,13 @@ kbl(df_marginTable, booktabs = T, caption = "Table X: TODO Add caption") %>%
 
 ...
 
-Discussion points...
+Our analysis of shot statistics from the first season of the Super Shot demonstrated an approximate four-times higher likelihood of missing  from the outer versus inner circle, irrespective of the match period (i.e. standard vs. Super Shot period). While the 95% CIs did overlap between the two periods, a slightly higher risk of missing from the outer versus inner circle was present in the Super Shot period. Our present findings conflict with our earlier work from the 2018 Super Netball season where we observed an approximate two-times higher risk of missing from the outer versus inner circle — and suggested that the 2:1 point ratio of the Super Shot represented 'good' value relative to the elevated risk of missing [@Fox2020]. Our present analysis perhaps suggests this is no longer the case — as the risk of missing from the outer circle has approximately doubled, and now outweighs the additional point value on offer. Across the different teams and periods, We found in all but one instance that the risk of missing from the outer versus inner circle was greater than two-times that of the inner circle. The only instance where the 95% CIs overlapped the 2:1 ratio was for the Firebirds during the standard period. This specific case is irrelevant, however, as the additional points were not available during this time. The obvious difference between the present study and our previous work [@Fox2020] is the actual presence of the Super Shot being on offer during the 2020 season. The elevated risk of missing from the outer versus inner circle from the 2018 to 2020 Super Netball season is similar to what we observed in originally comparing the 2018 Super Netball to Fast5 (i.e. where long range shots were also rewarded with additional points) [@Fox2020]. Therefore, it seems apparent that adding value to long-range shots in netball induces an adjustment in the way either attacking and/or defensive teams play that elevates the risk of missing long- versus close-range shots. There are a number of factors that could be contributing to this elevated risk. The most likely reason is an additional emphasis from defensive players on contesting long-range shots given their added value, while the presence if the Super Shot may also introduce psychological pressure on the shooting player. A more thorough analysis of defensive strategies and understanding shooting players perspectives around the Super Shot can assist in understanding the mechanisms behind the elevated risk. 
 
-- Consideration around our newly calculated relative risk of missing with respect to point value. Higher than previous, so now is the Super Shot worth taking? We could also do this specifically against a team as well as overall (i.e. what is the relative risk of make vs. miss for specific teams or against specific teams)
+Remaining discussion points...
 
-Our analysis of shot statistics from the first season of the Super Shot demonstrated an approximate four-times higher likelihood of missing  from the outer versus inner circle, irrespective of the match period (i.e. standard vs. Super Shot period). While the 95% CIs did overlap between the two periods, a slightly higher risk of missing from the outer versus inner circle was present in the Super Shot period. This conflicts with our earlier work from the 2018 Super Netball season where we observed an approximate two-times higher risk of missing from the outer versus inner circle — and suggested that the 2:1 point ratio of the Super Shot represented 'good' value relative to the elevated risk of missing [@Fox2020]. Our present analysis perhaps suggests this is no longer the case — as the elevated risk of missing from the outer circle now outweighs the additional point value on offer. Across the different teams and periods, We found in all but one instance that the risk of missing from the outer versus inner circle was greater than two-times that of the inner circle. The only instance where the 95% CIs overlapped the 2:1 ratio was for the Firebirds during the standard period. This specific case is, however, fairly irrelevant as the additional points were not available during this time. The obvious difference between the present study and our previous work [@Fox2020] is the actual presence of the Super Shot being on offer during the 2020 season. It appears evident that an adjustment in the way either the attacking and/or defensive teams played ...
 
-matches doubled increase we observed from Super Netball to Fast 5 though...i.e. 2 times higher risk of missing in Fast5 vs. Super netball equates to similar increase we saw --- further evidence that the presence of extra points is a contributing factor...
+Our approach in the present paper to simulate Super Shot scoring periods differs to our original work [@Fox2020]. Previously, we allocated an overall success rate to shots from the inner versus outer circle (i.e. if the sampled probability was 50%, a total of 50% of shots were counted as successful). This contrasts to our present work, where we sample and apply the probability of shot success to simulated individual shots (i.e. if the sampled probability is 50%, the individual shot being simulated has a 50% probability of success). This approach likely reflects an improvement on our analysis, better representing the independent nature of shots in a netball match.
+
 
 NOTES...{
 
