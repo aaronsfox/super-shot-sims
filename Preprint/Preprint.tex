@@ -108,6 +108,8 @@ Australia}
 \item
   Check consistency of Super Shot vs.~Power 5 period (use Power 5
   period)
+\item
+  Look to ESSA abstract for some sample points and language
 \end{itemize}
 
 \hypertarget{introduction}{%
@@ -127,9 +129,9 @@ Netball) made the decision to introduce the `Super Shot'
 ({\textbf{???}}). The Super Shot period provided teams an opportunity to
 gain one- versus two-points for successful shots made from the `inner'
 (i.e.~0m-3.0m) versus `outer' (i.e.~3.0m-4.9m), respectively, within the
-final five minutes of each quarter ({\textbf{???}}). The league has
-confirmed that the Super Shot rule will continue through the 2021 season
-({\textbf{???}}).
+final five minutes of each quarter (i.e.~the Power 5 period)
+({\textbf{???}}). The league confirmed that the Super Shot rule is
+continuing through the 2021 season ({\textbf{???}}).
 
 Our analysis prior to the 2020 season ({\textbf{???}}) suggested that
 the added value of the Super Shot (i.e.~two-points) aligned well with
@@ -148,15 +150,16 @@ place provides an opportunity to re-evaluate the risk-reward value of
 taking Super Shots with more valid shooting statistics. Further, these
 data can provide a better foundation for simulating Super Shot periods
 as a means to identify optimal shooting strategies. In the present study
-we re-visited the question of whether the weighting of a 2:1 value is
-appropriate based on the relative risk of missing a shot from the outer
-versus inner circle during the Super Shot period using data from the
-2020 season. Further -- we ran a series of simulations of the
-five-minute Super Shot period, driven by shooting statistics from the
-2020 season, in an attempt to identify optimal team-specific shooting
-strategies for the proportion of Super Shots to take.
-
-\textbf{\emph{TODO: add aim of competitive sims\ldots{}}}
+we firstly re-visited the question of whether the weighting of a 2:1
+value is appropriate based on the relative risk of missing a shot from
+the outer versus inner circle during the Power 5 period using data from
+the 2020 season. Second -- we ran simulations of the Power 5 period for
+each team, driven by shooting statistics from the 2020 season, in an
+attempt to identify optimal team-specific shooting strategies for the
+proportion of Super Shots to take. Third -- we ran simulations of teams
+competing against one another during a Power 5 period to determine how
+varying the proportion of Super Shots relative to total shots could
+impact scoring margin.
 
 \hypertarget{methods}{%
 \section{Methods}\label{methods}}
@@ -185,8 +188,8 @@ along with whether they were made or missed. Combined with the timestamp
 of these events within quarters, we extracted team-specific shooting
 statistics for: (i) the total number of shots taken; (ii) the number of
 shots taken from the inner and outer circle; and (iii) the number of
-made and missed shots from the inner and outer circle from each Super
-Shot period across the season.
+made and missed shots from the inner and outer circle from each Power 5
+period across the season.
 
 \hypertarget{data-analysis}{%
 \subsection{Data Analysis}\label{data-analysis}}
@@ -208,9 +211,9 @@ To examine the relative value of the 2:1 point ratio, we replicated the
 approach from our previous work ({\textbf{???}}), but this time with
 data from the 2020 season. Specifically, we compared the average
 relative odds (± 95\% confidence intervals {[}CI{]}) of missing from the
-outer versus inner circle during the Super Shot period. This was
-achieved by dividing randomly sampled values (\emph{n} = 100,000) from
-the probability density functions of the outer by those from the inner
+outer versus inner circle during the Power 5 period. This was achieved
+by dividing randomly sampled values (\emph{n} = 100,000) from the
+probability density functions of the outer by those from the inner
 circle at each sample iteration. This analysis was run using shooting
 statistics from the entire league, as well as individual teams, to give
 overall and team-specific risk-reward values for attempting Super Shots.
@@ -220,15 +223,15 @@ against an opponent. Theoretically, the relative odds of missing from
 the outer to inner circle should match the ratio of points awarded
 (i.e.~2:1) for the Super Shot to represent `good value.'
 
-Next, we ran a series of simulations (\emph{n} = 1,000 each) of the
-Power 5 period for each team altering the proportion of Super Shots
-taken from 0\% to 100\%, at 10\% increments. We used the previously
+Next -- we ran a series of simulations (\emph{n} = 1,000 each) of the
+Power 5 period for each team, altering the proportion of Super Shots
+taken from 0\% to 100\% at 10\% increments. We used the previously
 calculated probabilities of making versus missing shots from within and
 outside the outer circle during the Power 5 period from each team to
 estimate the number of points the team may score during this period.
-ACross each individual simulation, the total number of shots the team
-would take and the proportion of these that were Super Shots was first
-determined. We determined the mean and standard deviation for the number
+Across each individual simulation, the total number of shots the team
+would take and the proportion of these that were Super Shots was
+determined. We calculated the mean and standard deviation for the number
 of shots a team would expect during a Power 5 period based on overall
 season statistics --- and the total number of shots for a team in an
 individual simulation was randomly sampled from a truncated normal
@@ -249,7 +252,37 @@ scores achieved, and calculated the relative frequency of when the
 minimum and maximum score was achieved for each team under the different
 Super Shot proportions.
 
-\ldots{}
+A similar approach was taken in simulating teams competing against one
+another during Power 5 periods. A series of simulations (\emph{n} =
+1,000) of Power 5 periods were ran between all combinations of teams. We
+once again used the probabilities of making versus missing shots from
+within and outside the outer circle during the Power 5 period from each
+team to estimate scoring. To determine the number of shots each team
+received in a simulation, we created normal distribution based on the
+mean and standard deviation of the total shots from both teams and the
+proportion of these shots taken by each team in Power 5 periods across
+the season. Values were sampled from these normal distributions within
+each individual simulation to determine the number of shots each team
+were allocated. As part of this approach we ensured that appropriate
+balance was achieved for the shots allocated between teams by allocating
+the first team the relevant proportion of shots, and then the opposing
+team the remaining shots (i.e.~if one team received a high proportion of
+the total shots, the opposing team received a low proportion of the
+total shots). Each series of 1,000 simulations was repeatedly ran
+between all combinations of teams while altering the proportion of Super
+versus standard shots. For brevity in these simulations, the proportion
+of Super Shots taken by each team was altered from 0\% to 100\% at 25\%
+increments - with every possible combination between teams simualted.
+Shot success was determined in the same manner as previously outlined
+(i.e.~random number generator vs.~value sampled from the teams shot
+success probability distribution). After the shots from both teams were
+simulated, each teams score was summed given the value of made standard
+and Super shots and the subsequent margin determined. The mean and 95\%
+CIs for margins between each team across the various Super Shot
+proportion combinations simulated were then calculated.
+
+\textbf{\emph{TODO: any details about comparing shot numbers/shooting
+percentages?}}
 
 \begin{itemize}
 \tightlist
@@ -296,14 +329,17 @@ periods of the quarter (see Figure \ref{fig:relativeOddsDefFig}).
 \caption{Relative odds (mean $\pm$ 95$\%$ confidence intervals) of opposition teams missing from the outer versus inner circle across the entire match, and during the standard and Super Shot scoring periods.}\label{fig:relativeOddsDefFig}
 \end{figure}
 
-\ldots standard sims results\ldots{}
-
-Across all teams, as the proportion of Super Shots increased within
-simulations both the maximum and minimum scores achievable increased and
-decreased, respectively (see Figure \ref{fig:heatMapFig}). Both the
-highest and lowest achievable scores for each team therefore came from
-simulations using a high proportion of Super Shots (i.e.~\textgreater{}
-80\%).
+A similar pattern was observed across all teams when simulating Power 5
+periods with varying Super Shot proportions. Specifically, more
+consistent but lower scores were generated using a lower proportion of
+Super Shots (i.e.~\textless{} 30\%) versus inconsistent high and low
+scores when using a higher proportion of Super Shots
+(i.e.~\textgreater{} 80\%) (see Figure \ref{fig:heatMapFig} and
+\textbf{\emph{TODO: supplementary figures of individual team box
+plots}}). Effectively, both the maximum and minimum scores achievable
+increased and decreased, respectively, as Super Shot proportion
+increased (i.e.~the highest and lowest achievable scores came from
+simulations using a high proportion of Super Shots).
 
 \begin{landscape}
 \begin{figure}
@@ -320,22 +356,44 @@ simulations using a high proportion of Super Shots (i.e.~\textgreater{}
 
 \begin{table}
 
-\caption{\label{tab:standardSimMaxSummaryTable}TODO Add caption}
+\caption{\label{tab:standardSimMaxSummaryTable}TODO Add caption for max results...}
 \centering
 \resizebox{\linewidth}{!}{
-\begin{tabular}[t]{llllllllll}
+\begin{tabular}[t]{lrrrrrrrrr}
 \toprule
   & 10\%-20\% & 20\%-30\% & 30\%-40\% & 40\%-50\% & 50\%-60\% & 60\%-70\% & 70\%-80\% & 80\%-90\% & 90\%-100\%\\
 \midrule
-\cellcolor{gray!6}{Fever} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{FF9100\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{9.9\}\}} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{FF6200\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{6.7\}\}} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{FF1B00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{1.9\}\}} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{FF8E00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{9.7\}\}} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{BCFF00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{21.9\}\}} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{FF2900\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{2.8\}\}} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{FF8E00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{9.7\}\}} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{AAFF00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{23.1\}\}} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{FFB900\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{12.6\}\}}\\
-Firebirds & \textbackslash{}cellcolor[HTML]\{FF5F00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{6.5\}\} & \textbackslash{}cellcolor[HTML]\{FF0000\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{0\}\} & \textbackslash{}cellcolor[HTML]\{B9FF00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{22.1\}\} & \textbackslash{}cellcolor[HTML]\{FF5C00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{6.3\}\} & \textbackslash{}cellcolor[HTML]\{FF4F00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{5.4\}\} & \textbackslash{}cellcolor[HTML]\{FFD800\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{14.7\}\} & \textbackslash{}cellcolor[HTML]\{FFB900\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{12.6\}\} & \textbackslash{}cellcolor[HTML]\{FFE600\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{15.7\}\} & \textbackslash{}cellcolor[HTML]\{FFD600\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{14.6\}\}\\
-\cellcolor{gray!6}{GIANTS} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{FF2900\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{2.8\}\}} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{FF0000\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{0\}\}} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{FFC900\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{13.7\}\}} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{FF7C00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{8.5\}\}} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{FF0500\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{0.4\}\}} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{9AFF00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{24.2\}\}} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{FF2300\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{2.4\}\}} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{4CFF00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{29.5\}\}} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{EEFF00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{18.5\}\}}\\
-Lightning & \textbackslash{}cellcolor[HTML]\{FF2C00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{3\}\} & \textbackslash{}cellcolor[HTML]\{FF4200\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{4.5\}\} & \textbackslash{}cellcolor[HTML]\{FF2F00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{3.2\}\} & \textbackslash{}cellcolor[HTML]\{FF7B00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{8.4\}\} & \textbackslash{}cellcolor[HTML]\{FFF300\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{16.6\}\} & \textbackslash{}cellcolor[HTML]\{FF6600\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{7\}\} & \textbackslash{}cellcolor[HTML]\{FFA900\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{11.5\}\} & \textbackslash{}cellcolor[HTML]\{5BFF00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{28.5\}\} & \textbackslash{}cellcolor[HTML]\{FFF600\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{16.8\}\}\\
-\cellcolor{gray!6}{Magpies} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{FF0700\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{0.5\}\}} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{FF5500\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{5.8\}\}} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{FF3700\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{3.8\}\}} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{45FF00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{30\}\}} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{FF1300\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{1.3\}\}} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{FF0000\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{0\}\}} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{79FF00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{26.4\}\}} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{FF0000\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{0\}\}} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{2CFF00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{31.7\}\}}\\
+\cellcolor{gray!6}{Fever} & \cellcolor{gray!6}{9.9} & \cellcolor{gray!6}{6.7} & \cellcolor{gray!6}{1.9} & \cellcolor{gray!6}{9.7} & \cellcolor{gray!6}{21.9} & \cellcolor{gray!6}{2.8} & \cellcolor{gray!6}{9.7} & \cellcolor{gray!6}{23.1} & \cellcolor{gray!6}{12.6}\\
+Firebirds & 6.5 & 0.0 & 22.1 & 6.3 & 5.4 & 14.7 & 12.6 & 15.7 & 14.6\\
+\cellcolor{gray!6}{GIANTS} & \cellcolor{gray!6}{2.8} & \cellcolor{gray!6}{0.0} & \cellcolor{gray!6}{13.7} & \cellcolor{gray!6}{8.5} & \cellcolor{gray!6}{0.4} & \cellcolor{gray!6}{24.2} & \cellcolor{gray!6}{2.4} & \cellcolor{gray!6}{29.5} & \cellcolor{gray!6}{18.5}\\
+Lightning & 3.0 & 4.5 & 3.2 & 8.4 & 16.6 & 7.0 & 11.5 & 28.5 & 16.8\\
+\cellcolor{gray!6}{Magpies} & \cellcolor{gray!6}{0.5} & \cellcolor{gray!6}{5.8} & \cellcolor{gray!6}{3.8} & \cellcolor{gray!6}{30.0} & \cellcolor{gray!6}{1.3} & \cellcolor{gray!6}{0.0} & \cellcolor{gray!6}{26.4} & \cellcolor{gray!6}{0.0} & \cellcolor{gray!6}{31.7}\\
 \addlinespace
-Swifts & \textbackslash{}cellcolor[HTML]\{FF3F00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{4.3\}\} & \textbackslash{}cellcolor[HTML]\{FF5000\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{5.5\}\} & \textbackslash{}cellcolor[HTML]\{FF3F00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{4.3\}\} & \textbackslash{}cellcolor[HTML]\{FF8D00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{9.6\}\} & \textbackslash{}cellcolor[HTML]\{FFE500\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{15.6\}\} & \textbackslash{}cellcolor[HTML]\{FF7100\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{7.7\}\} & \textbackslash{}cellcolor[HTML]\{FF7700\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{8.1\}\} & \textbackslash{}cellcolor[HTML]\{56FF00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{28.8\}\} & \textbackslash{}cellcolor[HTML]\{FFE600\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{15.7\}\}\\
-\cellcolor{gray!6}{Thunderbirds} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{FF3A00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{4\}\}} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{FF0000\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{0\}\}} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{62FF00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{28\}\}} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{FF1A00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{1.8\}\}} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{FF8D00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{9.6\}\}} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{FF3A00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{4\}\}} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{53FF00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{29\}\}} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{FF3300\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{3.5\}\}} & \cellcolor{gray!6}{\textbackslash{}cellcolor[HTML]\{EBFF00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{18.7\}\}}\\
-Vixens & \textbackslash{}cellcolor[HTML]\{FF2100\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{2.3\}\} & \textbackslash{}cellcolor[HTML]\{FF0100\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{0.1\}\} & \textbackslash{}cellcolor[HTML]\{FFA600\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{11.3\}\} & \textbackslash{}cellcolor[HTML]\{FF7800\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{8.2\}\} & \textbackslash{}cellcolor[HTML]\{FF0400\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{0.3\}\} & \textbackslash{}cellcolor[HTML]\{A0FF00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{23.8\}\} & \textbackslash{}cellcolor[HTML]\{FF0100\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{0.1\}\} & \textbackslash{}cellcolor[HTML]\{00FF00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{34.7\}\} & \textbackslash{}cellcolor[HTML]\{E5FF00\}\{\textbackslash{}textcolor[HTML]\{4D4D4D\}\{19.1\}\}\\
+Swifts & 4.3 & 5.5 & 4.3 & 9.6 & 15.6 & 7.7 & 8.1 & 28.8 & 15.7\\
+\cellcolor{gray!6}{Thunderbirds} & \cellcolor{gray!6}{4.0} & \cellcolor{gray!6}{0.0} & \cellcolor{gray!6}{28.0} & \cellcolor{gray!6}{1.8} & \cellcolor{gray!6}{9.6} & \cellcolor{gray!6}{4.0} & \cellcolor{gray!6}{29.0} & \cellcolor{gray!6}{3.5} & \cellcolor{gray!6}{18.7}\\
+Vixens & 2.3 & 0.1 & 11.3 & 8.2 & 0.3 & 23.8 & 0.1 & 34.7 & 19.1\\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{table}
+
+\caption{\label{tab:standardSimMinSummaryTable}TODO Add caption for min results...}
+\centering
+\resizebox{\linewidth}{!}{
+\begin{tabular}[t]{lrrrrrrrrr}
+\toprule
+  & 10\%-20\% & 20\%-30\% & 30\%-40\% & 40\%-50\% & 50\%-60\% & 60\%-70\% & 70\%-80\% & 80\%-90\% & 90\%-100\%\\
+\midrule
+\cellcolor{gray!6}{Fever} & \cellcolor{gray!6}{2.2} & \cellcolor{gray!6}{2.4} & \cellcolor{gray!6}{1.3} & \cellcolor{gray!6}{6.3} & \cellcolor{gray!6}{16.4} & \cellcolor{gray!6}{2.1} & \cellcolor{gray!6}{12.4} & \cellcolor{gray!6}{35.9} & \cellcolor{gray!6}{20.9}\\
+Firebirds & 6.5 & 0.0 & 16.5 & 6.9 & 4.6 & 12.7 & 17.7 & 14.8 & 17.4\\
+\cellcolor{gray!6}{GIANTS} & \cellcolor{gray!6}{10.8} & \cellcolor{gray!6}{0.0} & \cellcolor{gray!6}{15.5} & \cellcolor{gray!6}{9.2} & \cellcolor{gray!6}{0.5} & \cellcolor{gray!6}{21.5} & \cellcolor{gray!6}{2.2} & \cellcolor{gray!6}{22.4} & \cellcolor{gray!6}{13.4}\\
+Lightning & 8.9 & 4.7 & 2.9 & 9.1 & 16.5 & 4.1 & 9.8 & 27.1 & 14.6\\
+\cellcolor{gray!6}{Magpies} & \cellcolor{gray!6}{0.8} & \cellcolor{gray!6}{9.1} & \cellcolor{gray!6}{2.6} & \cellcolor{gray!6}{23.0} & \cellcolor{gray!6}{1.4} & \cellcolor{gray!6}{0.0} & \cellcolor{gray!6}{29.8} & \cellcolor{gray!6}{0.0} & \cellcolor{gray!6}{31.1}\\
+\addlinespace
+Swifts & 8.4 & 5.1 & 4.2 & 8.0 & 13.7 & 6.1 & 9.1 & 27.9 & 15.1\\
+\cellcolor{gray!6}{Thunderbirds} & \cellcolor{gray!6}{3.7} & \cellcolor{gray!6}{0.0} & \cellcolor{gray!6}{18.4} & \cellcolor{gray!6}{1.5} & \cellcolor{gray!6}{7.8} & \cellcolor{gray!6}{3.9} & \cellcolor{gray!6}{39.1} & \cellcolor{gray!6}{6.0} & \cellcolor{gray!6}{17.5}\\
+Vixens & 11.2 & 0.2 & 18.5 & 9.8 & 0.1 & 21.7 & 0.2 & 22.9 & 12.9\\
 \bottomrule
 \end{tabular}}
 \end{table}
@@ -420,12 +478,51 @@ adding value to long-range shots in netball induces an adjustment in the
 way either attacking and/or defensive teams play that elevates the risk
 of missing long- versus close-range shots. There are a number of factors
 that could be contributing to this elevated risk. The most likely reason
-is an additional emphasis from defensive players on contesting
-long-range shots given their added value, while the presence if the
-Super Shot may also introduce psychological pressure on the shooting
-player. A more thorough analysis of defensive strategies and
+is an additional emphasis from defensive players on preventing or
+contesting long-range shots given their added value. This may also have
+an inverse effect on the difficulty of generating and taking standard
+shot opportunities, where by virtue of defensive strategies focusing on
+Super Shots could make it simpler for teams to get easier shots closer
+to the post. The presence of the Super Shot may also introduce
+psychological pressure on the shooting player and influence the chance
+of success. A more thorough analysis of defensive strategies and
 understanding shooting players perspectives around the Super Shot can
-assist in understanding the mechanisms behind the elevated risk.
+assist in understanding the mechanisms behind any elevated risks of
+missing long-range shots with added rewards.
+
+Despite the Super Shot potentially holding an unbalanced risk-reward
+trade-off (in general), there are likely scenarios where it is an
+attractive option or appropriate risk. When trailing by a large margin
+with minimal time remaining, the one point on offer for a standard shot
+may present very little value to the trailing team. In this scenario,
+the Super Shot potentially becomes the only or default option.
+Conversely, the leading team would likely adopt a `safe' approach and
+minimise their Super Shot attempts. Our analysis also considered overall
+team shooting statistics. The relative risk of missing a Super Shot may
+change for an individual (i.e.~specialist) long-range shooter. If a team
+possesses such a player, emphasising Super Shots could represent a
+relatively valuable opportunity. Similarly, there is some evidence to
+support the `hot-hand' premise in shooting sports ({\textbf{???}}). A
+team may benefit from preferentially feeding a shooter possessing this
+characteristic for Super Shot attempts during a Power 5 period.
+
+Restricting Super Shot attempts appears to be a safe, but likely
+limiting strategy for scoring during Power 5 periods. Our simulations
+examining potential scoring outputs with varying Super Shot proportions
+demonstrates this premise. Employing a low proportion (i.e.~\textless{}
+30\%) of Super Shots resulted in relatively low to moderate, but
+consistent, scoring outputs. The high probability of standard shot
+success is the likely driving factor behind the consistent scoring with
+lower Super Shot proportions (i.e.~higher standard shot proportions).
+Conversely, a high proportion (i.e.~\textgreater{} 80\%) of Super Shots
+resulted in a much wider spectrum of scoring outputs from relatively low
+through to high. Increasing the proportion of Super Shots taken
+generated a progressive increase in the maximum score achievable
+(i.e.~higher ceiling), but also coincided with a decrease in the minimum
+score achievable (i.e.~decreased floor). Teams taking a high proportion
+of Super Shots during Power 5 periods likely expose themselves to
+volatile scoring outcomes --- effectively `living or dying by the sword'
+that is the Super Shot. \textbf{\emph{Anything to wrap-up this point?}}
 
 Remaining discussion points\ldots{}
 
@@ -434,71 +531,14 @@ differs to our original work ({\textbf{???}}). Previously, we allocated
 an overall success rate to shots from the inner versus outer circle
 (i.e.~if the sampled probability was 50\%, a total of 50\% of shots were
 counted as successful). This contrasts to our present work, where we
-sample and apply the probability of shot success to simulated individual
-shots (i.e.~if the sampled probability is 50\%, the individual shot
-being simulated has a 50\% probability of success). This approach likely
-reflects an improvement on our analysis, better representing the
-independent nature of shots in a netball match.
-
-NOTES\ldots\{
-
-The relative odds of missing from the outer versus inner circle suggests
-that, on average, the value of the Super shot was outweighed by the
-elevated risk of missing. We found that in all but one instance, the
-risk of missing from the outer circle was greater than 2 times that of
-the inner circle. The only case where the 95\% CIs overlapped 2 was for
-the Firebirds during the standard period. This specific case is,
-however, somewhat irrelevant as the additional points were not available
-during this time. The mean relative odds across the dataset for our
-versus inner circle ranged from X to X. These values are much higher
-than our original analysis from a previous season, however align with
-the fast 5 data which also included additional points for long range
-shots. Together, these findings suggest that the presence of additional
-points is in some way making these shots more difficult. It is still
-difficult to infer what is causing this, with altered defensive
-strategies and added psychological pressure remaining as valid potential
-reasons. The risk of missing from the outer versus inner circle was also
-elevated in standard scoring times compared to previous seasons. This
-potentially suggests opposition teams may have adopted a general or
-overall shift in defending long range shots, even when the additional
-points were not available. Further analysis of gameplay or investigation
-of coach/player strategy and perceptions is likely necessary to confirm
-the factors contributing.
-
-General approach and considerations around this. There are likely still
-situations where the Super shot holds appropriate value. Despite the
-average relative risk outweighing the additional point value in offer,
-there may be situations where teams identify this as an appropriate
-risk. For example, when trailing by a large margin with minimal time
-remaining, the 1 point on offer for a standard shot may have very little
-value to the trailing team. In this instance the Super shot becomes the
-only option for a team to remain competitive. Our analysis also
-considered overall team shooting statistics. The relative risk may
-change for an individual specialist long range shooter, hence having the
-ball in their hands in Super shot range may actually present a
-relatively valuable opportunity. Hot hand too\ldots{}
-
-Defensive relative risk data\ldots. The opposition also appears to be a
-factor in the relative value of the Super shot. X teams appeared to
-defend the shot better by defending this better than the inner circle,
-particularly in the Super shot period. This further indicates an
-emphasis on certain teams defensive strategy for the Super shot, which
-could have made the long range harder, or by virtue of defending long
-range positions making it easier for teams to get easier shots closer to
-the post. Conversely, certain teams oppositions reduced their risk of
-outer vs.~inner miss during the super shot period -- perhaps suggesting
-that their defensive strategies were not as effective as their
-oppositions strategy in generating `good' shots during the super shot
-period. Despite the mean differences, the confidence intervals typically
-overlapped. Again, these inferences can only be confirmed with more
-detailed analysis of team strategy.
-
-\}
+sampled and applied the probability of shot success to simulated
+individual shots (i.e.~if the sampled probability is 50\%, the
+individual shot being simulated has a 50\% probability of success). This
+approach likely reflects an improvement on our analysis, better
+representing the independent nature of shots in a netball match.
 
 \begin{itemize}
 \tightlist
-\item
-  General/overall value with respect to different proportions?
 \item
   Team specific values, any obvious differences? For example, one team
   may have had better success and therefore using a higher proportion in
@@ -568,6 +608,8 @@ entire match. However, it is important to note that this is the average
 \section{Conclusion}\label{conclusion}}
 
 \ldots{}
+
+Scenario specific use\ldots{}
 
 \hypertarget{bibliography-styles}{%
 \section{Bibliography styles}\label{bibliography-styles}}
