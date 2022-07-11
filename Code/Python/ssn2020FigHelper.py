@@ -663,8 +663,8 @@ def indCompSimVis(df_compSimResults, team1, team2, compProps, colourDict,
             if fig.get_axes()[aa].patches[hh].get_height() > maxY:
                 maxY = fig.get_axes()[aa].patches[hh].get_height()
             
-    #Reset to nearest 25 ceiling
-    maxY = 25 * math.ceil(maxY/25)
+    #Reset to nearest 100 ceiling
+    maxY = 100 * math.ceil(maxY/100)
     for aa in range(0,len(fig.get_axes())):
         fig.get_axes()[aa].set_ylim([0,maxY])
         
@@ -679,14 +679,14 @@ def indCompSimVis(df_compSimResults, team1, team2, compProps, colourDict,
     for aa in range(0,len(fig.get_axes())):
         fig.get_axes()[aa].set_xlim([minX,maxX])
     
-    #Set y-axes ticks to 25 intervals.
+    #Set y-axes ticks to 100 intervals.
     #Set tick and axes labels only on first column
     for ncol in range(0,ax.shape[1]):
         for nrow in range(0,ax.shape[0]):
             #Set ticks
-            ax[nrow,ncol].set_yticks(np.linspace(0,maxY,int(maxY/25+1)))
+            ax[nrow,ncol].set_yticks(np.linspace(0,maxY,int(maxY/100+1)))
             #Set labels and fontsize
-            axLabels = list(np.linspace(0,maxY,int(maxY/25+1)))
+            axLabels = list(np.linspace(0,maxY,int(maxY/100+1)))
             axLabels = [math.trunc(value) for value in axLabels]
             ax[nrow,ncol].set_yticklabels(axLabels, fontsize = 8)
             #Set y-label if on first column
@@ -916,7 +916,7 @@ def allCompSimVis(df_compSimResults, teamName, compProps, colourDict, saveDir = 
                 maxY = fig.get_axes()[aa].patches[hh].get_height()
             
     #Reset to nearest 250 ceiling
-    maxY = 250 * math.ceil(maxY/250)
+    maxY = 500 * math.ceil(maxY/500)
     for aa in range(0,len(fig.get_axes())):
         fig.get_axes()[aa].set_ylim([0,maxY])
         
@@ -936,9 +936,9 @@ def allCompSimVis(df_compSimResults, teamName, compProps, colourDict, saveDir = 
     for ncol in range(0,ax.shape[1]):
         for nrow in range(0,ax.shape[0]):
             #Set ticks
-            ax[nrow,ncol].set_yticks(np.linspace(0,maxY,int(maxY/250+1)))
+            ax[nrow,ncol].set_yticks(np.linspace(0,maxY,int(maxY/500+1)))
             #Set labels and fontsize
-            axLabels = list(np.linspace(0,maxY,int(maxY/250+1)))
+            axLabels = list(np.linspace(0,maxY,int(maxY/500+1)))
             axLabels = [math.trunc(value) for value in axLabels]
             ax[nrow,ncol].set_yticklabels(axLabels, fontsize = 8)
             #Set y-label if on first column
