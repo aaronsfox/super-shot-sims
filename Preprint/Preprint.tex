@@ -6,11 +6,8 @@
 
 
 \usepackage{lineno} % add
-\providecommand{\tightlist}{%
-  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 
 \usepackage{graphicx}
-\usepackage{booktabs} % book-quality tables
 %%%%%%%%%%%%%%%% end my additions to header
 
 \usepackage[T1]{fontenc}
@@ -32,6 +29,7 @@
 \fi
 % use microtype if available
 \IfFileExists{microtype.sty}{\usepackage{microtype}}{}
+\usepackage[margin=1in]{geometry}
 \bibliographystyle{elsarticle-harv}
 \ifxetex
   \usepackage[setpagesize=false, % page size defined by xetex
@@ -43,7 +41,7 @@
 \hypersetup{breaklinks=true,
             bookmarks=true,
             pdfauthor={},
-            pdftitle={Short Paper},
+            pdftitle={Determining optimal shot selection strategy in Super Netball's `Power 5' period via numerical simulation},
             colorlinks=false,
             urlcolor=blue,
             linkcolor=magenta,
@@ -54,14 +52,42 @@
 % Pandoc toggle for numbering sections (defaults to be off)
 \setcounter{secnumdepth}{0}
 
+
+% tightlist command for lists without linebreak
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+
+% Pandoc citation processing
 \newlength{\cslhangindent}
 \setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newlength{\cslentryspacingunit} % times entry-spacing
+\setlength{\cslentryspacingunit}{\parskip}
+% for Pandoc 2.8 to 2.10.1
 \newenvironment{cslreferences}%
-  {\setlength{\parindent}{0pt}%
-  \everypar{\setlength{\hangindent}{\cslhangindent}}\ignorespaces}%
+  {}%
   {\par}
+% For Pandoc 2.11+
+\newenvironment{CSLReferences}[2] % #1 hanging-ident, #2 entry spacing
+ {% don't indent paragraphs
+  \setlength{\parindent}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+  \let\oldpar\par
+  \def\par{\hangindent=\cslhangindent\oldpar}
+  \fi
+  % set entry spacing
+  \setlength{\parskip}{#2\cslentryspacingunit}
+ }%
+ {}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{#1\hfill\break}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
 
-% Pandoc header
 \usepackage{booktabs}
 \usepackage{longtable}
 \usepackage{array}
@@ -80,9 +106,12 @@
 
 
 \begin{document}
+
+
 \begin{frontmatter}
 
-  \title{Short Paper}
+  \title{Determining optimal shot selection strategy in Super Netball's
+`Power 5' period via numerical simulation}
     \author[Centre for Sport Research]{Aaron S. Fox\corref{1}}
   
     \author[Centre for Sport Research]{Tanisha Bardzinski}
@@ -110,6 +139,8 @@ Australia}
   period)
 \item
   Look to ESSA abstract for some sample points and language
+\item
+  Add line spacing between paragraphs
 \end{itemize}
 
 \hypertarget{introduction}{%
@@ -117,49 +148,45 @@ Australia}
 
 Netball is a court-based team sport played predominantly among
 Commonwealth nations, and has one of the highest participation rates for
-team sports in Australia ({\textbf{???}}). As in many court-based team
-sports, the goal of netball is to score more than the opposition.
-Netball is, however, unique in that goals may only be scored by two
-players on each team from within the `shooting circle' (i.e.~a half
-circle around the goal with a 4.9m radius) at their end of the court
-({\textbf{???}}). Traditionally, goals scored from within this circle
-result in one `goal' or `point' for the team ({\textbf{???}}). In the
+team sports in Australia (\textbf{AustralianSportsCommission2020?}). As
+in many court-based team sports, the goal of netball is to score more
+than the opposition. Netball is, however, unique in that goals may only
+be scored by two players on each team from within the `shooting circle'
+(i.e.~a half circle around the goal with a 4.9m radius) at their end of
+the court (\textbf{INFrules?}). Traditionally, goals scored from within
+this circle result in one goal for the team (\textbf{INFrules?}). In the
 2020 season, Australia's national elite-level league (i.e.~Suncorp Super
 Netball) made the decision to introduce the `Super Shot'
-({\textbf{???}}). The Super Shot period provided teams an opportunity to
-gain one- versus two-points for successful shots made from the `inner'
-(i.e.~0m-3.0m) versus `outer' (i.e.~3.0m-4.9m), respectively, within the
-final five minutes of each quarter (i.e.~the Power 5 period)
-({\textbf{???}}). The league confirmed that the Super Shot rule is
-continuing through the 2021 season ({\textbf{???}}).
+(\textbf{NetballAusSuperShotIntro?}). The Power 5 provided teams an
+opportunity to gain one- versus two-goals for successful shots made from
+the `inner' (i.e.~0m-3.0m) versus `outer' (i.e.~3.0m-4.9m) circles,
+respectively, within the final five minutes of each quarter (i.e.~the
+Power 5 period) (\textbf{NetballAusSuperShotIntro?}). The rule has
+remained in place over subsequent seasons since the 2020 inception.
 
-Our analysis prior to the 2020 season ({\textbf{???}}) suggested that
-the added value of the Super Shot (i.e.~two-points) aligned well with
-the elevated risk of shooting from long range, and that teams may have
-been able to maximise their scoring by taking a high proportion of Super
-Shots. These findings were, however, based on shooting statistics from
-past seasons where the Super Shot rule was not in effect -- and further
-investigation of leagues where a `two-point rule' was in place
-(i.e.~international Fast5) resulted in a much higher risk of missing
-long-range shots ({\textbf{???}}). We hypothesised that the elevated
-risk of missing long-range shots with a `two-point rule' in place stems
-from situational factors, whereby defensive strategies were likely
-altered to place a heavier emphasis on defending long-range shots
-({\textbf{???}}). Data from the first full season with the Super Shot in
-place provides an opportunity to re-evaluate the risk-reward value of
+Our analysis prior to the 2020 season (\textbf{Fox2020?}) suggested that
+the added value of the Super Shot (i.e.~two-goals) aligned well with the
+elevated risk of shooting from long range, and that teams may have been
+able to maximise their scoring by taking a high proportion of Super
+Shots. These findings were, however, based on shooting statistics from a
+past season where the Super Shot rule was not in effect. Further
+investigation of netball competitions where a `two-goal rule' was in
+place (i.e.~international Fast5) resulted in a much higher risk of
+missing long-range shots (\textbf{Fox2020?}). We hypothesised that the
+elevated risk of missing long-range shots with a `two-goal rule' in
+place stems from situational factors, whereby defensive strategies were
+likely altered to place a heavier emphasis on defending long-range shots
+(\textbf{Fox2020?}). Data from the early years of the Super Shot in
+place provides an opportunity to re-evaluate the risk:reward value of
 taking Super Shots with more valid shooting statistics. Further, these
-data can provide a better foundation for simulating Super Shot periods
-as a means to identify optimal shooting strategies. In the present study
-we firstly re-visited the question of whether the weighting of a 2:1
-value is appropriate based on the relative risk of missing a shot from
-the outer versus inner circle during the Power 5 period using data from
-the 2020 season. Second -- we ran simulations of the Power 5 period for
-each team, driven by shooting statistics from the 2020 season, in an
-attempt to identify optimal team-specific shooting strategies for the
-proportion of Super Shots to take. Third -- we ran simulations of teams
-competing against one another during a Power 5 period to determine how
-varying the proportion of Super Shots relative to total shots could
-impact scoring margin.
+data can provide a better foundation for simulating Power 5 periods as a
+means to identify optimal shooting strategies. In the present study, we
+first ran simulations of the Power 5 period for each team individually
+in an attempt to identify expected scoring outcomes stemming from
+different Super Shot selection strategies. Second, we ran simulations of
+teams competing against one another during a Power 5 period to determine
+how varying the Super Shot selection strategy could impact scoring
+margin.
 
 \hypertarget{methods}{%
 \section{Methods}\label{methods}}
@@ -168,28 +195,27 @@ impact scoring margin.
 \subsection{Participants}\label{participants}}
 
 Participants for this study included all players across the eight teams
-from the 2020 season of the Australian national netball league
-(i.e.~Suncorp Super Netball). Our study included publicly available,
-pre-existing data held on the Suncorp Super Netball match centre
-(\textbf{\emph{TODO: add link}}). An exemption from ethics review (and
-subsequent waiver of individual consent) was granted by the Deakin
+from the 2020-2022 seasons season of the Australian national netball
+league (i.e.~Suncorp Super Netball). Our study included publicly
+available, pre-existing data held on the Suncorp Super Netball Match
+Centre. An exemption from ethics review was granted by the Deakin
 University Human Research Ethics Committee (\textbf{\emph{TODO: add
 details}}).
 
 \hypertarget{data-collection}{%
 \subsection{Data Collection}\label{data-collection}}
 
-We used the \{SuperNetballR\}\textbf{\emph{TODO: citation}} package to
-extract match data from all regular season games during the 2020 Super
-Netball Season via the Champion Data (official provider of competition
-statistics) match centre. Within the match centre data -- all shots are
-labelled with identifiers that place them in the inner or outer circle,
-along with whether they were made or missed. Combined with the timestamp
-of these events within quarters, we extracted team-specific shooting
-statistics for: (i) the total number of shots taken; (ii) the number of
-shots taken from the inner and outer circle; and (iii) the number of
-made and missed shots from the inner and outer circle from each Power 5
-period across the season.
+We used the \emph{\{SuperNetballR\}} (\textbf{\emph{TODO: citation}})
+package to extract match data from all regular season games during the
+2020-2022 Super Netball Seasons via the Champion Data (official provider
+of competition statistics) Match Centre. All shots are labelled with
+identifiers that place them in the inner or outer circle, along with
+whether they were made or missed. Combined with the timestamp of these
+events within quarters, we extracted team-specific shooting statistics
+for: (i) the total number of shots taken; (ii) the number of shots taken
+from the inner and outer circle; and (iii) the number of made and missed
+shots from the inner and outer circle from each Power 5 period across
+matches.
 
 \hypertarget{data-analysis}{%
 \subsection{Data Analysis}\label{data-analysis}}
@@ -203,54 +229,45 @@ function for the different circle zones, specified by:
 where \(a\) and \(b\) represent the number of missed and made shots
 within a circle zone, respectively; \(x\) is the probability of \(a\)
 relative to \(b\); and \(\Gamma\) is the gamma function
-({\textbf{???}}). Probability density functions were created for made
-versus missed shots in the inner and outer circles for each team, as
-well as all teams combined, to be used in subsequent analyses.
+(\textbf{NIST2020?}). Probability density functions were created for
+made versus missed shots in the inner and outer circles for each team to
+be used in subsequent simulations.
 
-To examine the relative value of the 2:1 point ratio, we replicated the
-approach from our previous work ({\textbf{???}}), but this time with
-data from the 2020 season. Specifically, we compared the average
-relative odds (± 95\% confidence intervals {[}CI{]}) of missing from the
-outer versus inner circle during the Power 5 period. This was achieved
-by dividing randomly sampled values (\emph{n} = 100,000) from the
-probability density functions of the outer by those from the inner
-circle at each sample iteration. This analysis was run using shooting
-statistics from the entire league, as well as individual teams, to give
-overall and team-specific risk-reward values for attempting Super Shots.
-We also applied this analysis to opposition shooting statistics against
-each team, providing a risk-reward value for attempting Super Shots
-against an opponent. Theoretically, the relative odds of missing from
-the outer to inner circle should match the ratio of points awarded
-(i.e.~2:1) for the Super Shot to represent `good value.'
-
-Next -- we ran a series of simulations (\emph{n} = 1,000 each) of the
-Power 5 period for each team, altering the proportion of Super Shots
-taken from 0\% to 100\% at 10\% increments. We used the previously
-calculated probabilities of making versus missing shots from within and
-outside the outer circle during the Power 5 period from each team to
-estimate the number of points the team may score during this period.
-Across each individual simulation, the total number of shots the team
-would take and the proportion of these that were Super Shots was
-determined. We calculated the mean and standard deviation for the number
-of shots a team would expect during a Power 5 period based on overall
-season statistics --- and the total number of shots for a team in an
-individual simulation was randomly sampled from a truncated normal
-distribution between the lower and upper 95\% CI limits of the
-mean/standard deviation. The number of standard versus Super Shots being
-taken within the simulation was then determined based on the current
-Super Shot proportion (i.e.~from 0\% to 100\%) being examined. The
-success (i.e.~make vs.~miss) of each individual standard or Super Shot
-within the simulation was then determined by generating a random value
-between 0 and 1, alongside a value sampled from the teams relevant
+First --- we ran a series of simulations (\emph{n} = 1,000 each) of the
+Power 5 period for each team, altering the `tendency' for each shot to
+be taken as a Super Shot. Across each individual simulation, the total
+number of shots the team received was driven by their expected number of
+shots in a Power 5 period based on the three seasons worth of data.
+Specifically, the mean and standard deviation (SD) of shots a team took
+during Power 5 periods was used to create a truncated normal
+distribution (upper and lower limits set at ±95\% confidence intervals
+{[}CIs{]}) --- of which the number of shots for a team in an individual
+simulation were randomly sampled from. Within each simulation, whether
+an individual shot was taken as a standard or Super Shot was dictated by
+the current tendency being simulated. We repeated each simulation across
+five tendencies towards taking Super Shots, those being: (i) `zero' (0\%
+chance of Super Shot being taken); (ii) `low' (25\% chance of Super Shot
+being taken); (iii) `moderate' (50\% chance of Super Shot being taken);
+(iv) `high' (75\% chance of Super Shot being taken); and (v) `all out'
+(100\% chance of Super Shot being taken). For each individual shot
+during the simulation, a random number between zero and one was
+generated from a uniform distribution --- and a Super versus standard
+shot was taken depending on if this was lower versus higher,
+respectively, than the chance of taking a Super Shot (e.g.~a random
+value of 0.45 within a `high' tendency simulation would result in a
+Super Shot being taken). The success (i.e.~make vs.~miss) of each
+individual standard or Super Shot within the simulation was then
+determined by generating a random value between zero and one from a
+uniform distribution, alongside a value sampled from the teams relevant
 probability density function of making a shot from the relevant location
 (i.e.~inner or outer circle). If the value sampled from the probability
 density function was greater versus lower than the random value --- the
 shot was considered successful versus unsuccessful, respectively. After
 all individual shots were simulated, the total team score was summed
-given the value of the made standard and Super shots. We examined the
-scores achieved, and calculated the relative frequency of when the
-minimum and maximum score was achieved for each team under the different
-Super Shot proportions.
+given the value of the made standard and Super shots. We calculated the
+scores achieved with the varying Super Shot tendencies relative to the
+`zero' tendency (mean ± SD, range) to examine the expected increase or
+decrease in scoring with altered Super Shot selection strategies.
 
 A similar approach was taken in simulating teams competing against one
 another during Power 5 periods. A series of simulations (\emph{n} =
@@ -258,193 +275,130 @@ another during Power 5 periods. A series of simulations (\emph{n} =
 once again used the probabilities of making versus missing shots from
 within and outside the outer circle during the Power 5 period from each
 team to estimate scoring. To determine the number of shots each team
-received in a simulation, we created normal distribution based on the
-mean and standard deviation of the total shots from both teams and the
-proportion of these shots taken by each team in Power 5 periods across
-the season. Values were sampled from these normal distributions within
-each individual simulation to determine the number of shots each team
-were allocated. As part of this approach we ensured that appropriate
-balance was achieved for the shots allocated between teams by allocating
-the first team the relevant proportion of shots, and then the opposing
-team the remaining shots (i.e.~if one team received a high proportion of
-the total shots, the opposing team received a low proportion of the
-total shots). Each series of 1,000 simulations was repeatedly ran
-between all combinations of teams while altering the proportion of Super
-versus standard shots. For brevity in these simulations, the proportion
-of Super Shots taken by each team was altered from 0\% to 100\% at 25\%
-increments - with every possible combination between teams simualted.
-Shot success was determined in the same manner as previously outlined
-(i.e.~random number generator vs.~value sampled from the teams shot
-success probability distribution). After the shots from both teams were
-simulated, each teams score was summed given the value of made standard
-and Super shots and the subsequent margin determined. The mean and 95\%
-CIs for margins between each team across the various Super Shot
-proportion combinations simulated were then calculated.
-
-\textbf{\emph{TODO: any details about comparing shot numbers/shooting
-percentages?}}
-
-\begin{itemize}
-\tightlist
-\item
-  Include some probability calculations of winning vs.~losing the 5
-  minute period (i.e.~X team's relative probability of winning
-  vs.~losing the super shot period under different proportions; or maybe
-  even between proportions?)
-\end{itemize}
+received in a simulation, we created two truncated normal distributions
+based on the mean and SD of total shots of total shots and the
+proportion of shots by teams in Power 5 periods (upper and lower limits
+set at minimum and maximum values). The number of shots the first team
+received (i.e.~Team A) was determined by the product of values randomly
+sampled from the two distributions (e.g.~values of 12 and 0.75 would
+result in 9 shots to Team A) distribution of total shots. The number of
+shots the second team received (i.e.~Team B) was then determined by
+allocating those remaining from the total shots (e.g.~in the
+aforementioned example Team B would receive the remaining 3 shots). As
+part of this approach we ensured that there was an appropriate balance
+between the disparity if shots each team received (i.e.~each team
+received an even amount of simulations where they had the same amount of
+more vs.~less shots). The series of 1,000 simulations was repeatedly ran
+between all combinations of teams and the aforementioned Super Shot
+selection tendencies. Standard versus Super Shot selection and shot
+success within simulations were determined in the same manner described
+earlier (i.e.~random number generator vs.~chance of Super Shot being
+taken and value sampled from the teams shot success probability
+distribution). At the end of each simulation, the teams scores were
+summed and the subsequent margin determined. The mean ± SD and range for
+margins between each team across the various Super Shot tendency
+combinations were then calculated. We also inspected the proportion of
+simulations each team won versus lost across simulations and the mean ±
+SD margin in these cases.
 
 \hypertarget{results}{%
 \section{Results}\label{results}}
 
-The relative combined odds (± 95\% CIs) from all teams of missing from
-the outer versus the inner circle across the entire match were 4.19
-{[}3.88, 4.52{]}, and 4.04 {[}3.5, 4.6{]} versus 4.68 {[}4.07, 5.35{]}
-in the standard and Super Shot periods, respectively. The relative odds
-of missing from the outer versus inner circle across the individual
-teams were relatively similar, with the exception of the Fever having
-higher odds than the majority of teams across the entire match period
-(see Figure \ref{fig:relativeOddsFig}). The relative odds (± 95\% CIs)
-of missing from the outer versus inner circle during the Super Shot
-Period were greater than 2:1 across all teams (see Figure
-\ref{fig:relativeOddsFig}). No team appeared more or less effective in
-elevating the risk of missing from the outer versus inner circle, with
-mostly similar odds observed across all teams opponents in the various
-periods of the quarter (see Figure \ref{fig:relativeOddsDefFig}).
+The shot frequencies for each team used to create probability density
+functions for use in simulations are displayed in Table
+\ref{tab:shotFrequencyTable}.
+
+\begin{table}
+
+\caption{\label{tab:shotFrequencyTable}Shot frequencies by team across 2020 — 2022 seasons used to create probability density functions for use in simulations.}
+\centering
+\begin{tabular}[t]{lrrrr}
+\toprule
+Team & Standard Goal & Standard Miss & Super Shot Goal & Super Shot Miss\\
+\midrule
+Fever & 783 & 24 & 168 & 159\\
+Firebirds & 622 & 87 & 179 & 207\\
+GIANTS & 409 & 37 & 315 & 254\\
+Lightning & 634 & 68 & 162 & 152\\
+Magpies & 590 & 47 & 159 & 140\\
+\addlinespace
+Swifts & 545 & 62 & 201 & 176\\
+Thunderbirds & 527 & 48 & 167 & 170\\
+Vixens & 527 & 60 & 194 & 176\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Our initial simulations of individual team scoring within Power 5
+periods using variable Super Shot selection tendencies found a small
+increase in mean scoring relative to the `zero' Super Shot tendency.
+Across all teams, the mean (± SD) goals scored relative to the `zero'
+tendency was 1.03 (± 0.21), 1.07 (± 0.30), 1.10 (± 0.37) and 1.14 (±
+0.43) across the `low,' `moderate,' `high' and `all out' strategies,
+respectively. Alongside the mean increase in relative goals scored, we
+observed a corresponding widening of the variance (i.e.~SD) and range of
+scoring values (i.e.~range) with higher tendencies to take Super Shots
+--- with these observations consistent across teams (see Figure
+\ref{fig:standardSimsRelativeGoalsScored}).
 
 \begin{figure}
 
-{\centering \includegraphics[width=1\linewidth]{C:/+GitRepos+/super-shot-sims/Results/relativeOdds/figures/RelativeOdds_OuterInner_AllTeams} 
+{\centering \includegraphics[width=1\linewidth]{C:/+GitRepos+/super-shot-sims/Results/standardSims/relativeGoalsScored} 
 
 }
 
-\caption{Relative odds (mean $\pm$ 95$\%$ confidence intervals) of teams missing from the outer versus inner circle across the entire match, and during the standard and Super Shot scoring periods.}\label{fig:relativeOddsFig}
+\caption{Total goals scored by teams across simulations (n = 1,000) with different Super Shot selection tendencies relative to the 'zero' Super Shot tendency. Point and solid lines represent mean $\pm$ standard deviation. Dashed line represents range of data. Shaded violin represents distribution of data.}\label{fig:standardSimsRelativeGoalsScored}
 \end{figure}
 
-\begin{figure}
-
-{\centering \includegraphics[width=1\linewidth]{C:/+GitRepos+/super-shot-sims/Results/relativeOdds/figures/RelativeOddsDef_OuterInner_AllTeams} 
-
-}
-
-\caption{Relative odds (mean $\pm$ 95$\%$ confidence intervals) of opposition teams missing from the outer versus inner circle across the entire match, and during the standard and Super Shot scoring periods.}\label{fig:relativeOddsDefFig}
-\end{figure}
-
-A similar pattern was observed across all teams when simulating Power 5
-periods with varying Super Shot proportions. Specifically, more
-consistent but lower scores were generated using a lower proportion of
-Super Shots (i.e.~\textless{} 30\%) versus inconsistent high and low
-scores when using a higher proportion of Super Shots
-(i.e.~\textgreater{} 80\%) (see Figure \ref{fig:heatMapFig} and
-\textbf{\emph{TODO: supplementary figures of individual team box
-plots}}). Effectively, both the maximum and minimum scores achievable
-increased and decreased, respectively, as Super Shot proportion
-increased (i.e.~the highest and lowest achievable scores came from
-simulations using a high proportion of Super Shots).
+Our simulations of Power 5 periods between teams revealed that on
+average the margins between the two teams remained closed to zero
+irrespective of the Super Shot tendency used or team involved (see
+Figure \ref{fig:compSimsMarginFigure}). We observed larger vs.~smaller
+maximal margins in simulation conditions where higher versus lower Super
+Shot tendencies were simulated, respectively (see Figure
+\ref{fig:compSimsMarginFigure}).
 
 \begin{landscape}
+
 \begin{figure}
 
-{\centering \includegraphics[width=1\linewidth]{C:/+GitRepos+/super-shot-sims/Results/standardSims/figures/SuperShotSimulations_HeatMap_AllTeams_Abs} 
+{\centering \includegraphics[width=1\linewidth]{C:/+GitRepos+/super-shot-sims/Results/compSims/compSimMargins} 
 
 }
 
-\caption{Distribution of simulated score outputs for each team using different Super Shot proportions. Black outline represents each teams actual proportion of Super Shots taken during Power 5 periods from 2020 season statistics.}\label{fig:heatMapFig}
+\caption{Power 5 period margin between teams during simulations (n = 1,000 using different Super Shot tendencies. Positive and negative margings reflect the period being won by the column-listed strategy (i.e. bolded) versus row-listed strategy (i.e. italicised), respectively. Point and solid lines represent mean $\pm$ standard deviation. Dashed line represents range of data. Shaded violin represents distribution of data.}\label{fig:compSimsMarginFigure}
 \end{figure}
+
 \end{landscape}
 
-\ldots standard sim max and min results\ldots{}
-
-\begin{table}
-
-\caption{\label{tab:standardSimMaxSummaryTable}TODO Add caption for max results...}
-\centering
-\resizebox{\linewidth}{!}{
-\begin{tabular}[t]{lrrrrrrrrr}
-\toprule
-  & 10\%-20\% & 20\%-30\% & 30\%-40\% & 40\%-50\% & 50\%-60\% & 60\%-70\% & 70\%-80\% & 80\%-90\% & 90\%-100\%\\
-\midrule
-\cellcolor{gray!6}{Fever} & \cellcolor{gray!6}{9.9} & \cellcolor{gray!6}{6.7} & \cellcolor{gray!6}{1.9} & \cellcolor{gray!6}{9.7} & \cellcolor{gray!6}{21.9} & \cellcolor{gray!6}{2.8} & \cellcolor{gray!6}{9.7} & \cellcolor{gray!6}{23.1} & \cellcolor{gray!6}{12.6}\\
-Firebirds & 6.5 & 0.0 & 22.1 & 6.3 & 5.4 & 14.7 & 12.6 & 15.7 & 14.6\\
-\cellcolor{gray!6}{GIANTS} & \cellcolor{gray!6}{2.8} & \cellcolor{gray!6}{0.0} & \cellcolor{gray!6}{13.7} & \cellcolor{gray!6}{8.5} & \cellcolor{gray!6}{0.4} & \cellcolor{gray!6}{24.2} & \cellcolor{gray!6}{2.4} & \cellcolor{gray!6}{29.5} & \cellcolor{gray!6}{18.5}\\
-Lightning & 3.0 & 4.5 & 3.2 & 8.4 & 16.6 & 7.0 & 11.5 & 28.5 & 16.8\\
-\cellcolor{gray!6}{Magpies} & \cellcolor{gray!6}{0.5} & \cellcolor{gray!6}{5.8} & \cellcolor{gray!6}{3.8} & \cellcolor{gray!6}{30.0} & \cellcolor{gray!6}{1.3} & \cellcolor{gray!6}{0.0} & \cellcolor{gray!6}{26.4} & \cellcolor{gray!6}{0.0} & \cellcolor{gray!6}{31.7}\\
-\addlinespace
-Swifts & 4.3 & 5.5 & 4.3 & 9.6 & 15.6 & 7.7 & 8.1 & 28.8 & 15.7\\
-\cellcolor{gray!6}{Thunderbirds} & \cellcolor{gray!6}{4.0} & \cellcolor{gray!6}{0.0} & \cellcolor{gray!6}{28.0} & \cellcolor{gray!6}{1.8} & \cellcolor{gray!6}{9.6} & \cellcolor{gray!6}{4.0} & \cellcolor{gray!6}{29.0} & \cellcolor{gray!6}{3.5} & \cellcolor{gray!6}{18.7}\\
-Vixens & 2.3 & 0.1 & 11.3 & 8.2 & 0.3 & 23.8 & 0.1 & 34.7 & 19.1\\
-\bottomrule
-\end{tabular}}
-\end{table}
-
-\begin{table}
-
-\caption{\label{tab:standardSimMinSummaryTable}TODO Add caption for min results...}
-\centering
-\resizebox{\linewidth}{!}{
-\begin{tabular}[t]{lrrrrrrrrr}
-\toprule
-  & 10\%-20\% & 20\%-30\% & 30\%-40\% & 40\%-50\% & 50\%-60\% & 60\%-70\% & 70\%-80\% & 80\%-90\% & 90\%-100\%\\
-\midrule
-\cellcolor{gray!6}{Fever} & \cellcolor{gray!6}{2.2} & \cellcolor{gray!6}{2.4} & \cellcolor{gray!6}{1.3} & \cellcolor{gray!6}{6.3} & \cellcolor{gray!6}{16.4} & \cellcolor{gray!6}{2.1} & \cellcolor{gray!6}{12.4} & \cellcolor{gray!6}{35.9} & \cellcolor{gray!6}{20.9}\\
-Firebirds & 6.5 & 0.0 & 16.5 & 6.9 & 4.6 & 12.7 & 17.7 & 14.8 & 17.4\\
-\cellcolor{gray!6}{GIANTS} & \cellcolor{gray!6}{10.8} & \cellcolor{gray!6}{0.0} & \cellcolor{gray!6}{15.5} & \cellcolor{gray!6}{9.2} & \cellcolor{gray!6}{0.5} & \cellcolor{gray!6}{21.5} & \cellcolor{gray!6}{2.2} & \cellcolor{gray!6}{22.4} & \cellcolor{gray!6}{13.4}\\
-Lightning & 8.9 & 4.7 & 2.9 & 9.1 & 16.5 & 4.1 & 9.8 & 27.1 & 14.6\\
-\cellcolor{gray!6}{Magpies} & \cellcolor{gray!6}{0.8} & \cellcolor{gray!6}{9.1} & \cellcolor{gray!6}{2.6} & \cellcolor{gray!6}{23.0} & \cellcolor{gray!6}{1.4} & \cellcolor{gray!6}{0.0} & \cellcolor{gray!6}{29.8} & \cellcolor{gray!6}{0.0} & \cellcolor{gray!6}{31.1}\\
-\addlinespace
-Swifts & 8.4 & 5.1 & 4.2 & 8.0 & 13.7 & 6.1 & 9.1 & 27.9 & 15.1\\
-\cellcolor{gray!6}{Thunderbirds} & \cellcolor{gray!6}{3.7} & \cellcolor{gray!6}{0.0} & \cellcolor{gray!6}{18.4} & \cellcolor{gray!6}{1.5} & \cellcolor{gray!6}{7.8} & \cellcolor{gray!6}{3.9} & \cellcolor{gray!6}{39.1} & \cellcolor{gray!6}{6.0} & \cellcolor{gray!6}{17.5}\\
-Vixens & 11.2 & 0.2 & 18.5 & 9.8 & 0.1 & 21.7 & 0.2 & 22.9 & 12.9\\
-\bottomrule
-\end{tabular}}
-\end{table}
-
-\ldots{}
-
-\begin{landscape}\begin{table}
-
-\caption{\label{tab:marginTable}TODO Add caption}
-\centering
-\resizebox{\linewidth}{!}{
-\begin{tabular}[t]{lllllllll}
-\toprule
-X & Fever & Firebirds & GIANTS & Lightning & Magpies & Swifts & Thunderbirds & Vixens\\
-\midrule
-\cellcolor{gray!6}{Team 0\% / Opp. 0\%} & \cellcolor{gray!6}{0.25 [0.06, 0.45]} & \cellcolor{gray!6}{-0.51 [-0.70, -0.32]} & \cellcolor{gray!6}{-0.10 [-0.29, 0.09]} & \cellcolor{gray!6}{-0.01 [-0.20, 0.19]} & \cellcolor{gray!6}{0.13 [-0.07, 0.32]} & \cellcolor{gray!6}{-0.01 [-0.21, 0.18]} & \cellcolor{gray!6}{0.13 [-0.06, 0.33]} & \cellcolor{gray!6}{0.12 [-0.07, 0.31]}\\
-Team 0\% / Opp. 25\% & 0.21 [0.00, 0.41] & -0.29 [-0.50, -0.09] & 0.33 [0.12, 0.54] & 0.27 [0.06, 0.49] & 0.46 [0.24, 0.67] & 0.25 [0.04, 0.47] & 0.31 [0.10, 0.53] & 0.54 [0.32, 0.76]\\
-\cellcolor{gray!6}{Team 0\% / Opp. 50\%} & \cellcolor{gray!6}{0.19 [-0.03, 0.40]} & \cellcolor{gray!6}{-0.02 [-0.25, 0.20]} & \cellcolor{gray!6}{0.71 [0.47, 0.94]} & \cellcolor{gray!6}{0.56 [0.33, 0.79]} & \cellcolor{gray!6}{0.78 [0.54, 1.01]} & \cellcolor{gray!6}{0.49 [0.26, 0.73]} & \cellcolor{gray!6}{0.51 [0.27, 0.74]} & \cellcolor{gray!6}{0.97 [0.73, 1.21]}\\
-Team 0\% / Opp. 75\% & 0.07 [-0.16, 0.30] & 0.13 [-0.11, 0.36] & 1.10 [0.86, 1.35] & 0.77 [0.53, 1.01] & 1.04 [0.80, 1.28] & 0.75 [0.51, 0.99] & 0.70 [0.46, 0.94] & 1.37 [1.12, 1.62]\\
-\cellcolor{gray!6}{Team 0\% / Opp. 100\%} & \cellcolor{gray!6}{-0.06 [-0.30, 0.19]} & \cellcolor{gray!6}{0.28 [0.03, 0.52]} & \cellcolor{gray!6}{1.49 [1.22, 1.75]} & \cellcolor{gray!6}{1.02 [0.76, 1.27]} & \cellcolor{gray!6}{1.31 [1.05, 1.57]} & \cellcolor{gray!6}{0.95 [0.69, 1.20]} & \cellcolor{gray!6}{0.75 [0.50, 1.01]} & \cellcolor{gray!6}{1.64 [1.38, 1.90]}\\
-\addlinespace
-Team 25\% / Opp. 0\% & -0.04 [-0.26, 0.18] & -0.77 [-0.98, -0.56] & -0.33 [-0.54, -0.12] & -0.27 [-0.48, -0.05] & -0.13 [-0.34, 0.09] & -0.28 [-0.49, -0.07] & -0.14 [-0.35, 0.07] & -0.12 [-0.33, 0.09]\\
-\cellcolor{gray!6}{Team 25\% / Opp. 25\%} & \cellcolor{gray!6}{-0.09 [-0.31, 0.14]} & \cellcolor{gray!6}{-0.55 [-0.77, -0.32]} & \cellcolor{gray!6}{0.10 [-0.13, 0.33]} & \cellcolor{gray!6}{0.02 [-0.21, 0.25]} & \cellcolor{gray!6}{0.20 [-0.03, 0.43]} & \cellcolor{gray!6}{-0.01 [-0.24, 0.22]} & \cellcolor{gray!6}{0.03 [-0.19, 0.26]} & \cellcolor{gray!6}{0.30 [0.07, 0.53]}\\
-Team 25\% / Opp. 50\% & -0.11 [-0.35, 0.13] & -0.28 [-0.52, -0.04] & 0.48 [0.22, 0.73] & 0.30 [0.05, 0.55] & 0.52 [0.27, 0.77] & 0.23 [-0.02, 0.48] & 0.23 [-0.02, 0.48] & 0.73 [0.47, 0.98]\\
-\cellcolor{gray!6}{Team 25\% / Opp. 75\%} & \cellcolor{gray!6}{-0.22 [-0.47, 0.03]} & \cellcolor{gray!6}{-0.13 [-0.38, 0.12]} & \cellcolor{gray!6}{0.87 [0.61, 1.13]} & \cellcolor{gray!6}{0.51 [0.26, 0.77]} & \cellcolor{gray!6}{0.79 [0.53, 1.05]} & \cellcolor{gray!6}{0.49 [0.23, 0.74]} & \cellcolor{gray!6}{0.42 [0.17, 0.67]} & \cellcolor{gray!6}{1.13 [0.87, 1.39]}\\
-Team 25\% / Opp. 100\% & -0.35 [-0.62, -0.09] & 0.02 [-0.24, 0.28] & 1.25 [0.98, 1.53] & 0.76 [0.49, 1.03] & 1.05 [0.78, 1.33] & 0.68 [0.41, 0.95] & 0.48 [0.21, 0.74] & 1.40 [1.12, 1.67]\\
-\addlinespace
-\cellcolor{gray!6}{Team 50\% / Opp. 0\%} & \cellcolor{gray!6}{-0.34 [-0.58, -0.10]} & \cellcolor{gray!6}{-1.04 [-1.27, -0.80]} & \cellcolor{gray!6}{-0.57 [-0.81, -0.34]} & \cellcolor{gray!6}{-0.52 [-0.75, -0.29]} & \cellcolor{gray!6}{-0.37 [-0.60, -0.14]} & \cellcolor{gray!6}{-0.54 [-0.77, -0.31]} & \cellcolor{gray!6}{-0.42 [-0.65, -0.19]} & \cellcolor{gray!6}{-0.37 [-0.60, -0.15]}\\
-Team 50\% / Opp. 25\% & -0.38 [-0.63, -0.13] & -0.81 [-1.06, -0.57] & -0.15 [-0.40, 0.10] & -0.24 [-0.49, 0.01] & -0.05 [-0.30, 0.20] & -0.28 [-0.52, -0.03] & -0.24 [-0.49, 0.01] & 0.05 [-0.20, 0.29]\\
-\cellcolor{gray!6}{Team 50\% / Opp. 50\%} & \cellcolor{gray!6}{-0.40 [-0.67, -0.14]} & \cellcolor{gray!6}{-0.54 [-0.81, -0.28]} & \cellcolor{gray!6}{0.23 [-0.04, 0.50]} & \cellcolor{gray!6}{0.05 [-0.22, 0.31]} & \cellcolor{gray!6}{0.27 [0.00, 0.54]} & \cellcolor{gray!6}{-0.03 [-0.30, 0.23]} & \cellcolor{gray!6}{-0.05 [-0.31, 0.22]} & \cellcolor{gray!6}{0.48 [0.21, 0.75]}\\
-Team 50\% / Opp. 75\% & -0.52 [-0.78, -0.26] & -0.40 [-0.66, -0.13] & 0.63 [0.35, 0.91] & 0.26 [-0.01, 0.53] & 0.54 [0.27, 0.81] & 0.22 [-0.05, 0.49] & 0.15 [-0.12, 0.41] & 0.88 [0.60, 1.15]\\
-\cellcolor{gray!6}{Team 50\% / Opp. 100\%} & \cellcolor{gray!6}{-0.65 [-0.93, -0.37]} & \cellcolor{gray!6}{-0.24 [-0.52, 0.03]} & \cellcolor{gray!6}{1.01 [0.72, 1.30]} & \cellcolor{gray!6}{0.51 [0.22, 0.79]} & \cellcolor{gray!6}{0.81 [0.52, 1.10]} & \cellcolor{gray!6}{0.42 [0.13, 0.71]} & \cellcolor{gray!6}{0.20 [-0.08, 0.48]} & \cellcolor{gray!6}{1.15 [0.86, 1.44]}\\
-\addlinespace
-Team 75\% / Opp. 0\% & -0.62 [-0.86, -0.38] & -1.26 [-1.50, -1.03] & -0.77 [-1.01, -0.53] & -0.75 [-0.99, -0.50] & -0.59 [-0.83, -0.35] & -0.75 [-0.99, -0.51] & -0.63 [-0.87, -0.39] & -0.55 [-0.79, -0.31]\\
-\cellcolor{gray!6}{Team 75\% / Opp. 25\%} & \cellcolor{gray!6}{-0.66 [-0.92, -0.41]} & \cellcolor{gray!6}{-1.04 [-1.29, -0.79]} & \cellcolor{gray!6}{-0.34 [-0.60, -0.09]} & \cellcolor{gray!6}{-0.46 [-0.72, -0.21]} & \cellcolor{gray!6}{-0.27 [-0.52, -0.01]} & \cellcolor{gray!6}{-0.49 [-0.75, -0.23]} & \cellcolor{gray!6}{-0.46 [-0.71, -0.20]} & \cellcolor{gray!6}{-0.13 [-0.39, 0.13]}\\
-Team 75\% / Opp. 50\% & -0.69 [-0.95, -0.42] & -0.77 [-1.04, -0.51] & 0.04 [-0.24, 0.31] & -0.18 [-0.45, 0.09] & 0.05 [-0.22, 0.33] & -0.25 [-0.52, 0.03] & -0.26 [-0.54, 0.01] & 0.30 [0.02, 0.58]\\
-\cellcolor{gray!6}{Team 75\% / Opp. 75\%} & \cellcolor{gray!6}{-0.80 [-1.07, -0.53]} & \cellcolor{gray!6}{-0.63 [-0.90, -0.35]} & \cellcolor{gray!6}{0.43 [0.15, 0.72]} & \cellcolor{gray!6}{0.03 [-0.25, 0.31]} & \cellcolor{gray!6}{0.32 [0.04, 0.60]} & \cellcolor{gray!6}{0.01 [-0.27, 0.29]} & \cellcolor{gray!6}{-0.07 [-0.35, 0.21]} & \cellcolor{gray!6}{0.70 [0.41, 0.99]}\\
-Team 75\% / Opp. 100\% & -0.93 [-1.21, -0.65] & -0.47 [-0.75, -0.19] & 0.81 [0.52, 1.11] & 0.28 [-0.01, 0.57] & 0.59 [0.29, 0.88] & 0.21 [-0.09, 0.50] & -0.01 [-0.30, 0.28] & 0.97 [0.67, 1.27]\\
-\addlinespace
-\cellcolor{gray!6}{Team 100\% / Opp. 0\%} & \cellcolor{gray!6}{-0.80 [-1.06, -0.53]} & \cellcolor{gray!6}{-1.41 [-1.67, -1.16]} & \cellcolor{gray!6}{-0.90 [-1.15, -0.64]} & \cellcolor{gray!6}{-0.91 [-1.16, -0.65]} & \cellcolor{gray!6}{-0.77 [-1.03, -0.51]} & \cellcolor{gray!6}{-0.96 [-1.21, -0.70]} & \cellcolor{gray!6}{-0.87 [-1.12, -0.61]} & \cellcolor{gray!6}{-0.77 [-1.02, -0.51]}\\
-Team 100\% / Opp. 25\% & -0.84 [-1.11, -0.57] & -1.19 [-1.46, -0.92] & -0.47 [-0.74, -0.20] & -0.62 [-0.90, -0.35] & -0.44 [-0.71, -0.17] & -0.69 [-0.97, -0.42] & -0.69 [-0.96, -0.42] & -0.35 [-0.62, -0.07]\\
-\cellcolor{gray!6}{Team 100\% / Opp. 50\%} & \cellcolor{gray!6}{-0.86 [-1.14, -0.58]} & \cellcolor{gray!6}{-0.92 [-1.20, -0.64]} & \cellcolor{gray!6}{-0.09 [-0.38, 0.20]} & \cellcolor{gray!6}{-0.34 [-0.63, -0.05]} & \cellcolor{gray!6}{-0.12 [-0.41, 0.17]} & \cellcolor{gray!6}{-0.45 [-0.74, -0.16]} & \cellcolor{gray!6}{-0.50 [-0.78, -0.21]} & \cellcolor{gray!6}{0.08 [-0.21, 0.38]}\\
-Team 100\% / Opp. 75\% & -0.98 [-1.27, -0.69] & -0.77 [-1.06, -0.48] & 0.30 [0.01, 0.60] & -0.13 [-0.42, 0.17] & 0.14 [-0.15, 0.44] & -0.19 [-0.48, 0.10] & -0.30 [-0.59, -0.01] & 0.48 [0.19, 0.78]\\
-\cellcolor{gray!6}{Team 100\% / Opp. 100\%} & \cellcolor{gray!6}{-1.11 [-1.41, -0.81]} & \cellcolor{gray!6}{-0.62 [-0.92, -0.32]} & \cellcolor{gray!6}{0.69 [0.38, 1.00]} & \cellcolor{gray!6}{0.12 [-0.19, 0.43]} & \cellcolor{gray!6}{0.41 [0.10, 0.72]} & \cellcolor{gray!6}{0.00 [-0.30, 0.31]} & \cellcolor{gray!6}{-0.25 [-0.55, 0.06]} & \cellcolor{gray!6}{0.75 [0.44, 1.07]}\\
-\bottomrule
-\end{tabular}}
-\end{table}
-\end{landscape}
+Supplementary figures\ldots{}
 
 \hypertarget{discussion}{%
 \section{Discussion}\label{discussion}}
+
+\ldots{}
+
+\begin{itemize}
+\tightlist
+\item
+  Teams can score more with higher super shot tendencies, but also a lot
+  less - larger ranges
+\item
+  In competitive sims, on average across large number of simulations
+  things end up pretty even -- But there are some relatively clear
+  floors and ceilings depending on strategies --- (e.g.~zero tendency
+  vs.~all out, can't beat by as much as other strategies, and can also
+  lose by a lot more)
+\item
+  While there weren't large fluctuations, certain teams had a better
+  probability of winning a power 5 period with different strategies
+\item
+  Situational when to use
+\item
+  Conclusion - on average, it doesn't matter, but selection of Super
+  Shot strategy likely needs to consider the situation, your teams
+  skillset, and your opponents strategy
+\end{itemize}
 
 \ldots{}
 
@@ -458,7 +412,7 @@ present findings conflict with our earlier work from the 2018 Super
 Netball season where we observed an approximate two-times higher risk of
 missing from the outer versus inner circle --- and suggested that the
 2:1 point ratio of the Super Shot represented `good' value relative to
-the elevated risk of missing ({\textbf{???}}). Our present analysis
+the elevated risk of missing (\textbf{Fox2020?}). Our present analysis
 perhaps suggests this is no longer the case --- as the risk of missing
 from the outer circle has approximately doubled, and now outweighs the
 additional point value on offer. Across the different teams and periods,
@@ -468,27 +422,27 @@ The only instance where the 95\% CIs overlapped the 2:1 ratio was for
 the Firebirds during the standard period. This specific case is
 irrelevant, however, as the additional points were not available during
 this time. The obvious difference between the present study and our
-previous work ({\textbf{???}}) is the actual presence of the Super Shot
-being on offer during the 2020 season. The elevated risk of missing from
-the outer versus inner circle from the 2018 to 2020 Super Netball season
-is similar to what we observed in originally comparing the 2018 Super
-Netball to Fast5 (i.e.~where long range shots were also rewarded with
-additional points) ({\textbf{???}}). Therefore, it seems apparent that
-adding value to long-range shots in netball induces an adjustment in the
-way either attacking and/or defensive teams play that elevates the risk
-of missing long- versus close-range shots. There are a number of factors
-that could be contributing to this elevated risk. The most likely reason
-is an additional emphasis from defensive players on preventing or
-contesting long-range shots given their added value. This may also have
-an inverse effect on the difficulty of generating and taking standard
-shot opportunities, where by virtue of defensive strategies focusing on
-Super Shots could make it simpler for teams to get easier shots closer
-to the post. The presence of the Super Shot may also introduce
-psychological pressure on the shooting player and influence the chance
-of success. A more thorough analysis of defensive strategies and
-understanding shooting players perspectives around the Super Shot can
-assist in understanding the mechanisms behind any elevated risks of
-missing long-range shots with added rewards.
+previous work (\textbf{Fox2020?}) is the actual presence of the Super
+Shot being on offer during the 2020 season. The elevated risk of missing
+from the outer versus inner circle from the 2018 to 2020 Super Netball
+season is similar to what we observed in originally comparing the 2018
+Super Netball to Fast5 (i.e.~where long range shots were also rewarded
+with additional points) (\textbf{Fox2020?}). Therefore, it seems
+apparent that adding value to long-range shots in netball induces an
+adjustment in the way either attacking and/or defensive teams play that
+elevates the risk of missing long- versus close-range shots. There are a
+number of factors that could be contributing to this elevated risk. The
+most likely reason is an additional emphasis from defensive players on
+preventing or contesting long-range shots given their added value. This
+may also have an inverse effect on the difficulty of generating and
+taking standard shot opportunities, where by virtue of defensive
+strategies focusing on Super Shots could make it simpler for teams to
+get easier shots closer to the post. The presence of the Super Shot may
+also introduce psychological pressure on the shooting player and
+influence the chance of success. A more thorough analysis of defensive
+strategies and understanding shooting players perspectives around the
+Super Shot can assist in understanding the mechanisms behind any
+elevated risks of missing long-range shots with added rewards.
 
 Despite the Super Shot potentially holding an unbalanced risk-reward
 trade-off (in general), there are likely scenarios where it is an
@@ -502,9 +456,10 @@ team shooting statistics. The relative risk of missing a Super Shot may
 change for an individual (i.e.~specialist) long-range shooter. If a team
 possesses such a player, emphasising Super Shots could represent a
 relatively valuable opportunity. Similarly, there is some evidence to
-support the `hot-hand' premise in shooting sports ({\textbf{???}}). A
-team may benefit from preferentially feeding a shooter possessing this
-characteristic for Super Shot attempts during a Power 5 period.
+support the `hot-hand' premise in shooting sports
+(\textbf{Bar-Eli2006?}). A team may benefit from preferentially feeding
+a shooter possessing this characteristic for Super Shot attempts during
+a Power 5 period.
 
 Restricting Super Shot attempts appears to be a safe, but likely
 limiting strategy for scoring during Power 5 periods. Our simulations
@@ -524,15 +479,61 @@ of Super Shots during Power 5 periods likely expose themselves to
 volatile scoring outcomes --- effectively `living or dying by the sword'
 that is the Super Shot. \textbf{\emph{Anything to wrap-up this point?}}
 
+Competitive simulation discussion paragraphs\ldots{}
+
+Examining the `typical' margins within the simulated Power 5 periods
+(i.e.~mean ± 95\% CIs) between teams revealed that, irrespective of the
+strategies used, the margins were typically low -- rarely exceeding 1.5
+to 2 points (see \ref{tab:marginTable}). There were times across the
+simulations were higher margins were present (\textbf{\emph{TODO: refer
+to supplementary figures}}), yet these were rarer occurrences. These
+data suggest that optimising the proportion of Super Shots taken versus
+allowing by a team and their opponent, respectively, can yield small but
+potentially meaningful benefits. A yield of one to two goals across each
+quarter would equate to four to eight goals across an entire match.
+Given netball matches can often be decided by a small number of goals --
+this may present a significant advantage for a team. There is, however,
+a degree of variability across these results and teams would not be able
+to expect the same outcome every time a specific strategy is employed.
+This would likely be more evident with respect to strategies employing a
+high propotion of Super Shots. As identified in our earlier analyses, a
+higher proportion of Super Shots introduces a degree of volatility in a
+teams scoring output -- and hence has the same potential to introduce
+volatility in the margin the team would encounter during such Power 5
+periods.
+
+\ldots high proportion of Super Shots may yield a beneficial result on
+average for a team, but given the approach being taken there will likely
+be times where this could backfire on the team\ldots{}
+
+The optimal proportion of Super Shots to take versus allow likely varies
+from team to team. For example, \ldots{}
+
+\ldots also other factors to consider that may dictate
+success\ldots number of shots\ldots shooting percentage\ldots{} For
+example, generating a greater number of shot opportunities than your
+opponent will likely lead to better scoring and margins - and may also
+provide a greater scope to risk taking a greater number of Super
+Shots\ldots{} \ldots investigating these additional
+factors\ldots outside the scope of this investigation\ldots{}
+
+Looking at the margin summaries (mean +/- 95\% CI's) from each teams
+competitive simulations across all opponents, certain strategies
+appeared more or less favourable across different teams. For example,
+where the Fever extended above 50\% of their shots as Super Shots, it
+was typical for them to score less than their opponent in the Super Shot
+period; whereas when they used no Super Shots they typically outscored
+their opponents. Other trends\ldots?
+
 Remaining discussion points\ldots{}
 
 Our approach in the present paper to simulate Super Shot scoring periods
-differs to our original work ({\textbf{???}}). Previously, we allocated
-an overall success rate to shots from the inner versus outer circle
-(i.e.~if the sampled probability was 50\%, a total of 50\% of shots were
-counted as successful). This contrasts to our present work, where we
-sampled and applied the probability of shot success to simulated
-individual shots (i.e.~if the sampled probability is 50\%, the
+differs to our original work (\textbf{Fox2020?}). Previously, we
+allocated an overall success rate to shots from the inner versus outer
+circle (i.e.~if the sampled probability was 50\%, a total of 50\% of
+shots were counted as successful). This contrasts to our present work,
+where we sampled and applied the probability of shot success to
+simulated individual shots (i.e.~if the sampled probability is 50\%, the
 individual shot being simulated has a 50\% probability of success). This
 approach likely reflects an improvement on our analysis, better
 representing the independent nature of shots in a netball match.
@@ -587,29 +588,24 @@ surprising as the fever had the highest risk of missing from the outer
 vs inner circle, particularly during Super shot periods. These findings
 likely demonstrate a need for teams to play to their shooting strengths.
 
-Looking at the margin summaries (mean +/- 95\% CI's) from each teams
-competitive simulations across all opponents, certain strategies
-appeared more or less favourable across different teams. For example,
-where the Fever extended above 50\% of their shots as Super Shots, it
-was typical for them to score less than their opponent in the Super Shot
-period; whereas when they used no Super Shots they typically outscored
-their opponents. Other trends\ldots?
-
-Nonetheless, the simulated margins within the Super Shot period,
-irrrespective of the strategies used, were typically low - rarely
-exceeding 1.5 to 2 points in a typical simulation. At most we suggest
-that optimising the Super Shot proportions for a given team and opponent
-may yield (on average) a 1 or 2 point gain each quarter. This may still
-be beneficial for teams, as this could equate to 4 to 8 points across an
-entire match. However, it is important to note that this is the average
-+/- 95\% CIs, and hence it will not occur the same each time.
-
 \hypertarget{conclusion}{%
 \section{Conclusion}\label{conclusion}}
 
 \ldots{}
 
 Scenario specific use\ldots{}
+
+Limitations - global probability of Super Shot success from teams across
+three seasons, unlikely to be representative of the exact shooting
+combinations that are put forward during a Power 5 period (e.g.~emphasis
+may be given to specialist long distance shooter); independent
+probability approach whereby each individual shot was pitted against
+overall probability of success (i.e.~ignores any sort of `hot hand'
+effect); similarly, the tendencies simulated were all or nothing in a
+sense that in an `All Out' strategy if the first couple of Super Shots
+missed the team might pull back, hence some simulations likely
+represented worst case outcomes that may not eventuate in such a
+circumstance
 
 \hypertarget{bibliography-styles}{%
 \section{Bibliography styles}\label{bibliography-styles}}
@@ -620,27 +616,27 @@ Elsevier styles based on standard styles like Harvard and Vancouver.
 Please use BibTeX~to generate your bibliography and include DOIs
 whenever available.
 
-Here are two sample references: Feynman and Vernon Jr. (1963; Dirac,
-1953).
+Here are two sample references: (Dirac, 1953; Feynman and Vernon Jr.;
+1963).
 
 \hypertarget{references}{%
 \section*{References}\label{references}}
 \addcontentsline{toc}{section}{References}
 
 \hypertarget{refs}{}
-\begin{cslreferences}
-\leavevmode\hypertarget{ref-Dirac1953888}{}%
+\begin{CSLReferences}{1}{0}
+\leavevmode\vadjust pre{\hypertarget{ref-Dirac1953888}{}}%
 Dirac, P.A.M., 1953. The lorentz transformation and absolute time.
 Physica 19, 888--896.
 doi:\href{https://doi.org/10.1016/S0031-8914(53)80099-6}{10.1016/S0031-8914(53)80099-6}
 
-\leavevmode\hypertarget{ref-Feynman1963118}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-Feynman1963118}{}}%
 Feynman, R.P., Vernon Jr., F.L., 1963. The theory of a general quantum
 system interacting with a linear dissipative system. Annals of Physics
 24, 118--173.
 doi:\href{https://doi.org/10.1016/0003-4916(63)90068-X}{10.1016/0003-4916(63)90068-X}
-\end{cslreferences}
+
+\end{CSLReferences}
 
 
 \end{document}
-
