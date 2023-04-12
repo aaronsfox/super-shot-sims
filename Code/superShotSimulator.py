@@ -788,7 +788,7 @@ fig, ax = plt.subplots(nrows = 5, ncols = 5, figsize = (10,8),
 
 #Adjust spacing
 plt.subplots_adjust(left = 0.06, right = 0.96,
-                    bottom = 0.12, top = 0.97,
+                    bottom = 0.13, top = 0.97,
                     wspace = 0.1, hspace = 0.1)
                 
 #Create a shortened list of tendency competitions to plot
@@ -871,7 +871,7 @@ for tendency in tendencyCompetitions:
     #Set title & additional y-label where pairs match
     if tendencyPair[1] == 'Zero':
         #Add title
-        plotAx.set_title(tendencyPair[0], fontsize = 12, fontweight = 'bold')
+        plotAx.set_title(tendencyPair[0], fontsize = 14, fontweight = 'bold')
            
     #Set additional side titles
     if tendencyPair[0] == 'All Out':
@@ -881,7 +881,7 @@ for tendency in tendencyCompetitions:
         plotAx2.set_yticks([])
         #Add label
         plotAx2.set_ylabel(tendencyPair[1], labelpad = 15,
-                           fontsize = 12, fontstyle = 'italic', fontweight = 'regular',
+                           fontsize = 14, fontstyle = 'italic', fontweight = 'regular',
                            rotation = -90)
 
     #Set x-Label
@@ -893,17 +893,17 @@ for tendency in tendencyCompetitions:
         plotAx.set_xticks(range(len(list(colourDict.keys()))))
         #Apply x-tick labels appropriately
         plotAx.set_xticklabels(list(colourDict.keys()),
-                               fontsize = 8, fontweight = 'bold',
+                               fontsize = 10, fontweight = 'bold',
                                rotation = 90)
         
     #Apply y-label and ticks appropriately
     if tendencyPair[0] == 'Zero':
         #Label
-        plotAx.set_ylabel('Margin', fontsize = 10, fontweight = 'bold')
+        plotAx.set_ylabel('Margin', fontsize = 12, fontweight = 'bold')
         #Ticks
         plotAx.set_yticks(np.linspace(-20,20,5,dtype=int))
         plotAx.set_yticklabels(np.linspace(-20,20,5,dtype=int),
-                               fontsize = 8)
+                               fontsize = 10)
     else:
         #Label
         plotAx.set_ylabel('')
